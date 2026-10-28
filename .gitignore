@@ -1,4 +1,4 @@
-# Never commit proprietary Liu tables or personal dictionaries.
+# 不要上傳嘸蝦米專有字根或個人字庫。
 **/liu-uni*.tab
 **/liuext.tab
 **/liuphon.tab
@@ -7,7 +7,7 @@
 **/liu.box
 **/LicensedTables/*
 !**/LicensedTables/README.txt
-# Development output, private history and logs.
+# 排除暫存檔、歷史檔及執行紀錄。
 **/History/
 **/Logs/
 **/SetupLogs/

@@ -1,9 +1,11 @@
-ShamiGo public release intentionally includes NO proprietary Boshiamy root tables.
+蝦米GO：嘸蝦米個人字根資料夾
 
-To use your own, properly licensed dictionary, place liu-uni.tab in this
-folder BEFORE running Install_Windows.cmd. You may also add your separately
-licensed optional tables here, but NEVER commit or upload them to GitHub.
+蝦米GO是嘸蝦米輸入法的免安裝外殼。此資料夾用來存放你自行合法取得的嘸蝦米字根檔。
 
-The Windows input engine cannot start without liu-uni.tab.
-Existing private dictionaries in a protected installation are not part of
-this ZIP, and this public release never provides a substitute table.
+免安裝使用方法：
+1. 將 liu-uni.tab 複製到本資料夾。
+2. 雙擊儲存庫根目錄的 Run_Windows.cmd，即可直接啟動蝦米GO。
+
+如果希望每次登入 Windows 都能自動啟動蝦米GO，請改執行根目錄的 Install_Windows.cmd。
+
+本儲存庫不提供嘸蝦米專有字根檔。請依照原授權條件使用自己的字根資料，勿將個人字根檔公開上傳。

@@ -1,42 +1,68 @@
-# ShamiGo（蝦米 GO）
+# 蝦米GO（ShamiGo）
 
-ShamiGo 是適用於 Windows 與 Linux 的中文輸入法。
-
-## 支援平台
-
-| 平台 | 版本 |
-| --- | --- |
-| Windows 11（x64） | v0.10.394 |
-| Debian 13／LMDE 7（amd64、Fcitx5） | v0.10.366-1 |
+**蝦米GO是嘸蝦米輸入法的免安裝外殼。** 它不是另一套全新的嘸蝦米輸入法，而是讓使用者沿用自己合法取得的嘸蝦米字根資料，在 Windows 上直接啟動輸入。另提供注音、拼音、候選字與其他輔助輸入功能。
 
 ## 下載
 
-從本儲存庫取得全部檔案，保留原有的資料夾結構。Windows 與 Linux 的安裝檔分別位於 `Windows/` 和 `Linux/`。
+點選 GitHub 頁面上的 **Code（程式碼）→ Download ZIP（下載 ZIP）**，將整個儲存庫下載並解壓縮。請保留原本的資料夾結構。
 
-## 安裝與使用
+## Windows：免安裝直接使用（建議）
 
-### Windows
+**Windows 版不必安裝，雙擊即可啟動。**
 
-1. 將個人使用的 `liu-uni.tab` 放入 `Windows/LicensedTables/`。
-2. 執行根目錄的 `Install_Windows.cmd` 安裝。
-3. 也可使用 `Run_Windows.cmd` 直接啟動。
+1. 將自行合法取得的嘸蝦米字根檔 `liu-uni.tab`，放入 `Windows/LicensedTables/` 資料夾。
+2. 雙擊根目錄的 **`Run_Windows.cmd`**，即可直接使用蝦米GO。
+3. 使用完畢，可在 Windows 通知區的蝦米GO圖示按右鍵，選擇結束程式。
 
-移除：執行 `Uninstall_Windows.cmd`。
+免安裝方式不需要先執行安裝程式，也不需要設定登入後自動啟動。保留下載的資料夾，日後即可再次啟動。
 
-### Linux
+## Windows：安裝並自動啟動（選用）
 
-在 Debian 13 或 LMDE 7 的終端機執行：
+如果想在每次登入 Windows 時自動啟動蝦米GO，可以使用安裝方式：
+
+1. 先將 `liu-uni.tab` 放入 `Windows/LicensedTables/`。
+2. 雙擊根目錄的 **`Install_Windows.cmd`**，依 Windows 提示同意管理員授權。
+3. 安裝程式會將程式複製到受保護的安裝位置，並設定登入後自動啟動。
+
+若要移除安裝版，請先結束蝦米GO，再執行 **`Uninstall_Windows.cmd`**。原本下載的免安裝資料夾不會因此被刪除。
+
+| 檔案 | 用途 |
+| --- | --- |
+| `Run_Windows.cmd` | **免安裝，直接啟動蝦米GO** |
+| `Install_Windows.cmd` | 安裝蝦米GO，並設定登入後自動啟動 |
+| `Uninstall_Windows.cmd` | 移除已安裝的程式及自動啟動設定 |
+
+詳細操作可參閱 [Windows 使用說明](Windows/ShamiGo_Help.html)。
+
+## Linux：安裝與使用
+
+Linux 版適用於 **Debian 13／LMDE 7（64 位元、Fcitx5）**，需安裝套件才能使用。
+
+在下載的資料夾開啟終端機，執行：
 
 ```sh
 sh Install_Linux.sh
 ```
 
-安裝完成後，匯入個人使用的字根資料：
+接著匯入自己合法取得的嘸蝦米字根資料：
 
 ```sh
 shamigo-setup import-data --source /path/to/LicensedTables
 ```
 
-重新啟動 Fcitx5，並啟用 ShamiGo 輸入法。
+請將 `/path/to/LicensedTables` 改成實際存放字根檔的資料夾路徑。重新啟動 Fcitx5，並在輸入法清單中啟用蝦米GO。
 
-移除：執行 `sh Uninstall_Linux.sh`。
+移除 Linux 版：
+
+```sh
+sh Uninstall_Linux.sh
+```
+
+## 版本
+
+| 平台 | 版本 |
+| --- | --- |
+| Windows 11（64 位元） | v0.10.394 |
+| Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
+
+蝦米GO不隨附嘸蝦米專有字根檔；使用者需自行合法取得。蝦米GO並非嘸蝦米的官方產品。
