@@ -73,7 +73,7 @@ sh Uninstall_Linux.sh
 
 ## VirusTotal 公開掃描與安全說明
 
-以下是 [VirusTotal](https://www.virustotal.com/) 對目前 GitHub 發行檔的掃描紀錄，依 SHA-256 對應特定檔案。**有引擎偵測到惡意程式，不代表已確認感染；但也不能在未查證前斷言只是誤判。**
+以下是 [VirusTotal](https://www.virustotal.com/) 對目前 GitHub 發行檔的掃描紀錄，依 SHA-256 對應特定檔案。**若對蝦米GO程式有疑慮，請勿使用。**
 
 | 發行檔 | 防毒引擎結果 | 掃描報告 |
 | --- | --- | --- |
