@@ -71,19 +71,30 @@ sh Uninstall_Linux.sh
 | Windows 11（64 位元） | v0.10.394 |
 | Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
 
-## VirusTotal 公開掃描結果
+## VirusTotal 公開掃描與安全說明
 
-以下為 [VirusTotal](https://www.virustotal.com/) 依檔案 SHA-256 提供的查詢結果。**Windows 主程式已出現 5 個防毒引擎的惡意軟體偵測，因此目前不能宣稱整套蝦米GO已通過掃毒。**
+以下是 [VirusTotal](https://www.virustotal.com/) 對目前 GitHub 發行檔的掃描紀錄，依 SHA-256 對應特定檔案。**有引擎偵測到惡意程式，不代表已確認感染；但也不能在未查證前斷言只是誤判。**
 
-| 發行檔 | 已取得的掃描資訊 | 公開報告 |
+| 發行檔 | 防毒引擎結果 | 掃描報告 |
 | --- | --- | --- |
-| Windows 主程式 `ShamiGo_v0.10.394.exe` | **75 個引擎：5 個判定惡意、66 個未偵測、4 個不支援**。分析時間：2026-10-29 01:47（臺灣時間） | [VirusTotal 掃描報告](https://www.virustotal.com/gui/file/2d2f0a73b06816080f8275c1304157f9cf7c1cf9f3a279a352f1118fd1af4373/detection) |
-| Windows 安裝輔助程式 `ShamiGo_AdminSetup.exe` | 有檔案查詢紀錄，但**沒有分析日期與防毒引擎結果**；不能判定安全 | [VirusTotal 檔案查詢](https://www.virustotal.com/gui/file/246729bcc5974a5f20fb5cc91ed725e6e57cafc384a3c5f7aa30b900972cb4fe/detection) |
-| Linux 安裝套件 `shamigo-fcitx5_0.10.366-1_amd64.deb` | 有檔案查詢紀錄，但**沒有分析日期與防毒引擎結果**；不能判定安全 | [VirusTotal 檔案查詢](https://www.virustotal.com/gui/file/f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f/detection) |
+| Windows 主程式 `ShamiGo_v0.10.394.exe` | **5 個判定惡意、66 個未偵測、4 個不支援**（共 75） | [VirusTotal](https://www.virustotal.com/gui/file/2d2f0a73b06816080f8275c1304157f9cf7c1cf9f3a279a352f1118fd1af4373/detection) |
+| Windows 安裝輔助程式 `ShamiGo_AdminSetup.exe` | **1 個判定惡意、70 個未偵測、4 個不支援**（共 75） | [VirusTotal](https://www.virustotal.com/gui/file/246729bcc5974a5f20fb5cc91ed725e6e57cafc384a3c5f7aa30b900972cb4fe/detection) |
+| Linux 套件 `shamigo-fcitx5_0.10.366-1_amd64.deb` | **0 個判定惡意、61 個未偵測、14 個不支援**（共 75） | [VirusTotal](https://www.virustotal.com/gui/file/f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f/detection) |
 
-查詢日期：**2026 年 10 月 29 日（臺灣時間）**。Windows 主程式的偵測包含泛用型木馬及啟發式判定，但目前**沒有證據可以確定是誤判或實際惡意程式**。建議在原因釐清之前暫緩安裝或執行。其餘兩個檔案缺少有效掃描結果，不能將「0 個引擎報告」解讀為「0 個威脅」。
+掃描時間：**2026 年 10 月 29 日約 01:47（臺灣時間）**。報告會隨防毒引擎更新而改變，最新狀態請以連結為準。
 
-所有檔案的 SHA-256 可參閱 [SHA256SUMS.txt](SHA256SUMS.txt)。VirusTotal 的偵測數量可能隨重新分析而改變，應以連結中的最新報告為準。
+### 為什麼輸入法可能出現防毒偵測？
+
+蝦米GO是嘸蝦米輸入法的免安裝外殼，為了提供快捷鍵、候選字選取及輸出文字等功能，需要處理鍵盤事件並與目前使用中的程式互動。部分安全防護工具會將這類行為與鍵盤監控、自動輸入等具有雙重用途的功能一起檢查，因此**有可能**產生啟發式或機器學習偵測。
+
+另外，`Install_Windows.cmd` 是**選用**的安裝方式，會在使用者同意 Windows 管理員授權後，設定登入時自動啟動。若不需要自動啟動，可以直接使用 `Run_Windows.cmd` 免安裝執行；兩者的作用不同。
+
+**上述只是可能的技術原因，尚未證實是本次各防毒引擎判定的實際原因。** Windows 主程式及安裝輔助程式目前確實存在惡意程式偵測紀錄，仍需要檢查程式碼、執行行為與第三方元件，並由相關防毒廠商進一步判定，才能確認是否屬於誤判。
+
+### 使用者如何查驗？
+
+請從本 GitHub 儲存庫取得發行檔，核對 [SHA256SUMS.txt](SHA256SUMS.txt)，並開啟上方 VirusTotal 報告自行查看。**請勿為了執行蝦米GO而停用防毒軟體、建立掃描排除項目或忽略安全警示。** 若尚未釐清警示原因，建議暫緩執行相關檔案。
+
 
 ## 授權
 
