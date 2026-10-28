@@ -2,6 +2,8 @@
 
 **蝦米GO是嘸蝦米輸入法的免安裝外殼。** 它不是另一套全新的嘸蝦米輸入法，而是讓使用者沿用自己合法取得的嘸蝦米字根資料，在 Windows 上直接啟動輸入。另提供注音、拼音、候選字與其他輔助輸入功能。
 
+<img width="320" height="58" alt="圖片" src="https://github.com/user-attachments/assets/fa324653-fcc4-4f7d-af1e-f89bf0c5b4d5" />
+
 ## 下載
 
 點選 GitHub 頁面上的 **Code（程式碼）→ Download ZIP（下載 ZIP）**，將整個儲存庫下載並解壓縮。請保留原本的資料夾結構。
