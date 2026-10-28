@@ -93,7 +93,7 @@ sh Uninstall_Linux.sh
 
 ### 使用者如何查驗？
 
-請從本 GitHub 儲存庫取得發行檔，核對 [SHA256SUMS.txt](SHA256SUMS.txt)，並開啟上方 VirusTotal 報告自行查看。**請勿為了執行蝦米GO而停用防毒軟體、建立掃描排除項目或忽略安全警示。** 若尚未釐清警示原因，建議暫緩執行相關檔案。
+請從本 GitHub 儲存庫取得發行檔，核對 [SHA256SUMS.txt](SHA256SUMS.txt)，並開啟上方 VirusTotal 報告自行查看。
 
 
 ## 授權
