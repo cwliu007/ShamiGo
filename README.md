@@ -1,6 +1,6 @@
 # 蝦米GO（ShamiGo）
 
-**蝦米GO是嘸蝦米輸入法的免安裝外殼。** 使用者沿用自己合法取得的嘸蝦米字根資料，在 Windows 上直接啟動輸入。另提供注音、拼音、候選字與其他輔助輸入功能。
+**蝦米GO是嘸蝦米輸入法的免安裝外殼。** 蝦米GO並非嘸蝦米的官方產品。蝦米GO是經由Vibe Coding所創造，核心驅動為C++語言。使用者沿用自己合法取得的嘸蝦米字根資料，在 Windows 上直接啟動輸入。另提供注音、拼音、候選字與其他輔助輸入功能。
 
 <img width="596" height="180" alt="圖片" src="https://github.com/user-attachments/assets/842f0c2d-b53e-44e4-b53b-26c701ddf9dc" />
 
@@ -71,4 +71,3 @@ sh Uninstall_Linux.sh
 | Windows 11（64 位元） | v0.10.394 |
 | Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
 
-蝦米GO不隨附嘸蝦米專有字根檔；使用者需自行合法取得。蝦米GO並非嘸蝦米的官方產品。
