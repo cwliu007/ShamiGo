@@ -1,0 +1,23 @@
+# Never commit proprietary Liu tables or personal dictionaries.
+**/liu-uni*.tab
+**/liuext.tab
+**/liuphon.tab
+**/AssociatedPhrases.cin
+**/liu.cin
+**/liu.box
+**/LicensedTables/*
+!**/LicensedTables/README.txt
+# Development output, private history and logs.
+**/History/
+**/Logs/
+**/SetupLogs/
+**/UninstallBackups/
+*.log
+*.tmp
+*.bak
+*.backup-*
+*.old
+*~
+__pycache__/
+.DS_Store
+Thumbs.db
