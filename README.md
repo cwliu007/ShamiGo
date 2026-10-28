@@ -16,7 +16,7 @@
 
 **Windows 版不必安裝，雙擊即可啟動。**
 
-1. 將自行合法取得的嘸蝦米字根檔 `liu-uni.tab`，放入 `Windows/LicensedTables/` 資料夾。
+1. 將自行合法取得的嘸蝦米字根檔 `liu-uni.tab`，放入 `Windows/LicensedTables/` 資料夾。(請至行易有限公司購買嘸蝦米https://boshiamy.com/)
 2. 雙擊根目錄的 **`Run_Windows.cmd`**，即可直接使用蝦米GO。
 3. 使用完畢，可在 Windows 通知區的蝦米GO圖示按右鍵，選擇結束程式。
 
