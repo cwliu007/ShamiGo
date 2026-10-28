@@ -71,6 +71,33 @@ sh Uninstall_Linux.sh
 | Windows 11（64 位元） | v0.10.394 |
 | Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
 
+## 病毒掃描與安全性查驗
+
+蝦米GO的公開發行檔可使用 [VirusTotal](https://www.virustotal.com/) 查驗。VirusTotal 彙整多家防毒引擎的偵測結果；下方連結依據各檔案的 SHA-256 雜湊值，直接連到相對應的檔案查詢頁面。
+
+**查驗日期：2026 年 10 月 29 日。** 目前尚未取得可核對的 VirusTotal 完成掃描結果，因此不列示未經確認的偵測數量，也不宣稱已通過掃毒。
+
+| 公開發行檔 | VirusTotal 查詢 | 目前查驗結果 |
+| --- | --- | --- |
+| Windows 主程式：`ShamiGo_v0.10.394.exe` | [查詢掃描報告](https://www.virustotal.com/gui/file/2d2f0a73b06816080f8275c1304157f9cf3a279a352f1118fd1af4373/detection) | 尚未取得可驗證的掃描數據 |
+| Windows 安裝輔助程式：`ShamiGo_AdminSetup.exe` | [查詢掃描報告](https://www.virustotal.com/gui/file/246729bcc5974a5f20fb5cc91ed725e6e57cafc384a3c5f7aa30b900972cb4fe/detection) | 尚未取得可驗證的掃描數據 |
+| Linux 套件：`shamigo-fcitx5_0.10.366-1_amd64.deb` | [查詢掃描報告](https://www.virustotal.com/gui/file/f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f/detection) | 尚未取得可驗證的掃描數據 |
+
+檔案辨識用的完整 SHA-256 值如下：
+
+```text
+Windows/ShamiGo_v0.10.394.exe
+2d2f0a73b06816080f8275c1304157f9cf3a279a352f1118fd1af4373
+
+Windows/ShamiGo_AdminSetup.exe
+246729bcc5974a5f20fb5cc91ed725e6e57cafc384a3c5f7aa30b900972cb4fe
+
+Linux/shamigo-fcitx5_0.10.366-1_amd64.deb
+f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f
+```
+
+以上 SHA-256 值依據儲存庫的 [SHA256SUMS.txt](SHA256SUMS.txt) 列示。點開 VirusTotal 連結後，若顯示找不到分析報告，需將對應的發行檔上傳至 VirusTotal 才能產生掃描結果。**「尚未取得報告」不等於「0 個防毒引擎偵測」；即使結果為 0，也不保證軟體絕對安全。**
+
 ## 授權
 
 蝦米GO採用**免費使用、保留著作權（Freeware，All Rights Reserved）**的方式提供。使用者可免費下載及使用，Windows 版並支援免安裝直接啟動。免費使用不代表可以任意重新包裝、修改後公開發行或販售作者擁有權利的程式。
