@@ -1,6 +1,6 @@
 # 蝦米GO（ShamiGo）
 
-**蝦米GO是嘸蝦米輸入法的免安裝外殼。** 蝦米GO並非嘸蝦米的官方產品。核心程式為C++語言，由作者規畫、設計並透過ChatGPT撰寫程式。使用者沿用自己合法取得的嘸蝦米字根資料(可至嘸蝦米官方網站行易有限公司購買嘸蝦米取得字根檔https://boshiamy.com/)，在 Windows 上直接啟動輸入。另提供注音、拼音、候選字與其他輔助輸入功能。
+**蝦米GO是嘸蝦米輸入法的免安裝外殼。** 蝦米GO並非嘸蝦米的官方產品。核心程式為C++語言，由作者規畫、設計並透過ChatGPT撰寫程式。使用者沿用自己合法取得的嘸蝦米字根資料(可至嘸蝦米官方網站行易有限公司購買嘸蝦米取得字根檔 https://boshiamy.com/ )，在 Windows 上直接啟動輸入。另提供注音、拼音、候選字與其他輔助輸入功能。
 
 <img width="800" height="770" alt="Recording 2026-10-29 133520" src="https://github.com/user-attachments/assets/026ac44f-51fd-4eb9-bcec-bf31222bc4f4" />
 
