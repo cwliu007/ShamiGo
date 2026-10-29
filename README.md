@@ -4,7 +4,8 @@
 
 
 
-https://github.com/user-attachments/assets/6cbdad65-fa21-4923-b788-259cd7f2ddf6
+<img width="800" height="770" alt="Recording 2026-10-29 133520" src="https://github.com/user-attachments/assets/7e17e2ff-87d9-4e47-b17f-3c9f159c2377" />
+
 
 
 
