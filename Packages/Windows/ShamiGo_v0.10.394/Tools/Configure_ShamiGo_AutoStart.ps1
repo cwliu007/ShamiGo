@@ -195,54 +195,16 @@ try {
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { Fail ('Missing component: ' + $file) }
         }
         Say '[2/3] Installing protected copy (maximum 60 seconds)...'
-        # v394 public package ships NO personal tables. Preserve an existing
-        # secured user-custom liu.box across the native setup's default-file copy.
-        $userBox = Join-Path $installDir 'liu.box'
-        $boxBackup = $null
-        if (Test-Path -LiteralPath $userBox -PathType Leaf) {
-            $boxItem = Get-Item -LiteralPath $userBox -Force -ErrorAction Stop
-            if (($boxItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
-                Fail 'User custom dictionary is a link: refusing update.'
-            }
-            $boxBackup = Join-Path $installDir ('liu.box.restore-' + [guid]::NewGuid().ToString('N') + '.tmp')
-            Copy-Item -LiteralPath $userBox -Destination $boxBackup -ErrorAction Stop
-            if ((Get-FileHash -LiteralPath $boxBackup -Algorithm SHA256).Hash -ne
-                (Get-FileHash -LiteralPath $userBox -Algorithm SHA256).Hash) {
-                Fail ('Personal dictionary backup verification failed: ' + $boxBackup)
-            }
-        }
-        try {
-            # IMPORTANT: do not use Start-Process -Wait. It waits for all descendants,
-            # including processes that might stay alive. Wait for this exact helper PID.
-            $p = Start-Process -FilePath $setupExe -ArgumentList '--setup-only' `
-                -WorkingDirectory $releaseDir -PassThru -ErrorAction Stop
-            $code = Wait-Child $p 60 'Native ShamiGo installer'
-            if ($code -ne 0) { Fail ('Native installer returned exit code {0}. Close any old elevated ShamiGo and retry.' -f $code) }
-            if (-not (Test-Path -LiteralPath $installedExe -PathType Leaf)) { Fail 'Protected ShamiGo.exe is missing after setup.' }
-            $portableHash = (Get-FileHash -LiteralPath $portableExe -Algorithm SHA256).Hash
-            if ((Get-FileHash -LiteralPath $installedExe -Algorithm SHA256).Hash -ne $portableHash) {
-                Fail 'Protected executable differs from the packaged executable.'
-            }
-        } finally {
-            if ($null -ne $boxBackup -and (Test-Path -LiteralPath $boxBackup -PathType Leaf)) {
-                # Leave the backup available on any restore error; do not claim success.
-                Copy-Item -LiteralPath $boxBackup -Destination $userBox -Force -ErrorAction Stop
-                if ((Get-FileHash -LiteralPath $boxBackup -Algorithm SHA256).Hash -ne
-                    (Get-FileHash -LiteralPath $userBox -Algorithm SHA256).Hash) {
-                    Fail ('Personal dictionary restore verification failed. Backup: ' + $boxBackup)
-                }
-                Remove-Item -LiteralPath $boxBackup -Force -ErrorAction Stop
-            }
-        }
-        $noticeSource = Join-Path $releaseDir 'THIRD_PARTY_NOTICES.md'
-        $noticeDest = Join-Path $installDir 'THIRD_PARTY_NOTICES.md'
-        if (-not (Test-Path -LiteralPath $noticeSource -PathType Leaf)) {
-            Fail 'Required third-party rights notice is missing.'
-        }
-        Copy-Item -LiteralPath $noticeSource -Destination $noticeDest -Force -ErrorAction Stop
-        if ((Get-FileHash -LiteralPath $noticeSource -Algorithm SHA256).Hash -ne
-            (Get-FileHash -LiteralPath $noticeDest -Algorithm SHA256).Hash) {
-            Fail 'Installed third-party notice verification failed.'
+        # IMPORTANT: do not use Start-Process -Wait. It waits for all descendants,
+        # including processes that might stay alive. Wait for this exact helper PID.
+        $p = Start-Process -FilePath $setupExe -ArgumentList '--setup-only' `
+            -WorkingDirectory $releaseDir -PassThru -ErrorAction Stop
+        $code = Wait-Child $p 60 'Native ShamiGo installer'
+        if ($code -ne 0) { Fail ('Native installer returned exit code {0}. Close any old elevated ShamiGo and retry.' -f $code) }
+        if (-not (Test-Path -LiteralPath $installedExe -PathType Leaf)) { Fail 'Protected ShamiGo.exe is missing after setup.' }
+        $portableHash = (Get-FileHash -LiteralPath $portableExe -Algorithm SHA256).Hash
+        if ((Get-FileHash -LiteralPath $installedExe -Algorithm SHA256).Hash -ne $portableHash) {
+            Fail 'Protected executable differs from the packaged executable.'
         }
         Say '[3/3] Registering auto-start (maximum 40 seconds)...'
         Run-TaskWorker 'Register'

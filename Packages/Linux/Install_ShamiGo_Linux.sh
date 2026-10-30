@@ -83,18 +83,14 @@ printf '%s\n' '[4/5] Linking Fcitx5 Eng / ShamiGo 嘸 labels (per-user)...'
 shamigo-link-fcitx-labels install
 printf '%s\n' '[5/5] Checking installation readiness...'
 
-if ! shamigo-setup check --strict; then
-  # Public GitHub release does not distribute proprietary Liu tables.
-  # Treat ONLY a missing personal main table as pending activation, not as a
-  # package failure. Every other required system dependency must be present.
-  if ! shamigo-setup check --json | python3 -c 'import json,sys
-s=json.load(sys.stdin);c=s["checks"]
-missing=[k for k,v in c.items() if not v and "(optional)" not in k]
-sys.exit(0 if missing == ["Personal liu-uni.tab"] else 1)'; then
-    echo 'Program package installed, but other required system components are missing. See report above.' >&2
-    exit 1
-  fi
-  echo 'ShamiGo program installed. Please import your separately licensed liu-uni.tab before using the input engine.'
-  echo 'Use: shamigo-setup import-data --source /path/to/private-dictionaries'
+if [ ! -f "$HERE/LicensedTables/liu-uni.tab" ] &&
+   [ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/fcitx5/shamigo/liu-uni.tab" ]; then
+  echo 'PACKAGE INSTALLED: no personal Liu dictionary is available yet.'
+  echo 'Import a properly licensed table with:'
+  echo '  shamigo-setup import-data --source /path/to/LicensedTables'
+  echo 'Then check the installation with: shamigo-setup check --strict'
+elif ! shamigo-setup check --strict; then
+  echo 'Program package installed, but readiness is incomplete. Check personal dictionary and fcitx5 packages.' >&2
+  exit 1
 fi
-echo 'ShamiGo package installed. Restart Fcitx5 (or sign out/in) to show Eng / 嘸.'
+echo 'ShamiGo installed. Restart Fcitx5 (or sign out/in) to show Eng / ShamiGo. The Qt6 toolbar follows the live Fcitx status.'

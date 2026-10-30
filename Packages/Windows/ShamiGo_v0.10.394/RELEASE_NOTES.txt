@@ -1,0 +1,20 @@
+ShamiGo Windows v0.10.394 (released 2026-10-28)
+
+Windows application EXE, admin launcher, and admin setup EXE are unchanged
+from the audited v394 binary release. No input algorithm or UI feature version
+is incremented by this documentation / distribution cleanup.
+
+v394 includes a corrected version-aware allowlist for its standalone ZIP CMD
+payloads, better partial ZIP extraction support, and administrator setup
+failure diagnostics. New-install settings: light theme, 70 percent opacity,
+2 seconds status/result notifications, 1 second Ctrl+Space hints. Existing
+user data/settings are preserved by the intended installation procedures.
+
+The private distribution retains licensed tables and full source projects.
+The GitHub public distribution strips sources and licensed tables, including
+embedded copies inside CMD and Linux VM archives. Users supply their own
+properly licensed Liu table before starting or setting up a fresh install.
+
+Linux package remains 0.10.366-1. macOS installer is not available.
+Hardware verification of Windows 11 Explorer / UAC / VirtualBox is pending.
+See README.md and Docs/CHANGELOG.md in the release root.

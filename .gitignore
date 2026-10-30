@@ -1,23 +1,46 @@
-# 不要上傳嘸蝦米專有字根或個人字庫。
+# Personal source projects and author-only audit/build tools stay out of GitHub.
+/Projects/
+/Tools/
+/Check_Project.cmd
+/Check_Project.sh
+/Check_Linux.sh
+/Verify_Package.py
+# Never publish personally licensed Boshiamy dictionaries or phrase tables.
+**/LicensedTables/*.tab
+**/LicensedTables/*.cin
 **/liu-uni*.tab
-**/liuext.tab
 **/liuphon.tab
+**/liuext.tab
 **/AssociatedPhrases.cin
-**/liu.cin
 **/liu.box
-**/LicensedTables/*
-!**/LicensedTables/README.txt
-# 排除暫存檔、歷史檔及執行紀錄。
+**/liu.cin
+# Build intermediates and personal files.
 **/History/
 **/Logs/
 **/SetupLogs/
 **/UninstallBackups/
-*.log
+**/out/
+**/build-output/
+**/Build/
+**/build/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/Testing/
+**/*.pdb
+**/*.obj
+**/*.o
+**/*.log
 *.tmp
 *.bak
-*.backup-*
 *.old
 *~
-__pycache__/
+**/__pycache__/
+**/*.pyc
 .DS_Store
 Thumbs.db
+
+# Safety net: unknown dictionary/table names and accidental full ZIP exports.
+**/*.tab
+**/*.cin
+**/*.box
+ShamiGo_v*.zip

@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>蝦米GO v0.10.394 使用說明</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #101216;
+    --surface: #181b21;
+    --surface-2: #20242c;
+    --text: #eef1f6;
+    --muted: #aeb5c2;
+    --border: #343a46;
+    --accent: #8eb4ff;
+    --accent-soft: #26344f;
+    --code: #252a33;
+    --selection: #f3df86;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Microsoft JhengHei UI", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+    line-height: 1.75;
+    letter-spacing: .01em;
+  }
+  ::selection { background: var(--selection); color: #111; }
+  a { color: var(--accent); }
+  code, kbd {
+    font-family: "Cascadia Mono", Consolas, monospace;
+    background: var(--code);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: .08rem .38rem;
+    color: #f7f9fc;
+  }
+  kbd { box-shadow: inset 0 -1px 0 rgba(255,255,255,.12), 0 1px 1px rgba(0,0,0,.35); }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 34px 24px 80px; }
+  header {
+    background: linear-gradient(145deg, #1b2029, #14171c);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px 30px;
+    box-shadow: 0 12px 34px rgba(0,0,0,.25);
+  }
+  h1 { margin: 0 0 8px; font-size: 2rem; letter-spacing: .04em; }
+  header p { margin: 0; color: var(--muted); }
+  .tip {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+  }
+  nav {
+    margin: 22px 0;
+    padding: 18px 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  nav strong { display: block; margin-bottom: 8px; }
+  nav a { display: inline-block; margin: 2px 16px 2px 0; text-decoration: none; }
+  section {
+    margin-top: 22px;
+    padding: 24px 26px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  h2 { margin: 0 0 16px; font-size: 1.35rem; }
+  h3 { margin: 24px 0 10px; color: #d9e5ff; }
+  p { margin: 10px 0; }
+  ul, ol { padding-left: 1.45rem; }
+  li { margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+  th, td { padding: 10px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+  th { background: var(--surface-2); color: #dce7ff; }
+  tr:nth-child(even) td { background: rgba(255,255,255,.018); }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .keys { white-space: nowrap; }
+  .note { color: var(--muted); font-size: .96rem; }
+  .important { color: #ffe8a1; }
+  footer { margin-top: 28px; text-align: center; color: var(--muted); font-size: .9rem; }
+  @media (max-width: 720px) {
+    .wrap { padding: 18px 12px 50px; }
+    header, section { padding: 20px 18px; }
+    .grid { grid-template-columns: 1fr; }
+    table { font-size: .94rem; }
+  }
+  @media print {
+    :root { --bg:#fff; --surface:#fff; --surface-2:#f5f5f5; --text:#111; --muted:#444; --border:#bbb; }
+    body { color: #111; }
+    header, section, nav { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+  <h1>蝦米GO 使用說明</h1>
+  <p>Windows v0.10.394 使用說明（Linux 發行版為 v0.10.366-1）</p>
+  <p>Windows 11（64 位元）原生 C++ 文字輸入工具。涵蓋輸入模式、候選字、設定、成對符號與遠端控制；以目前的輸入功能為準。</p>
+  <div class="tip">本說明可離線閱讀。按 <kbd>Ctrl</kbd> + <kbd>F</kbd> 搜尋，選取文字後可按 <kbd>Ctrl</kbd> + <kbd>C</kbd> 複製。</div>
+</header>
+<nav aria-label="目錄">
+  <strong>目錄</strong>
+  <a href="#quick">快速使用</a>
+  <a href="#start">啟動與結束</a>
+  <a href="#modes">輸入模式與快捷鍵</a>
+  <a href="#liu">中文與候選字</a>
+  <a href="#symbols">標點與長按</a>
+  <a href="#pairs">成對符號／包覆文字</a>
+  <a href="#errors">錯碼推薦與查碼</a>
+  <a href="#phonetic">拼音、注音與查碼</a>
+  <a href="#reference">拼音／注音對照</a>
+  <a href="#settings">浮動框與設定</a>
+  <a href="#data">資料檔與字庫</a>
+  <a href="#remote">遠端控制輸入</a>
+  <a href="#troubleshoot">常見問題與相容性</a>
+  <a href="#third-party">資料來源與權利</a>
+</nav>
+<section id="quick">
+  <h2>快速使用：五件最常做的事</h2>
+  <ol>
+    <li><strong>切換中文／英文：</strong><kbd>Ctrl</kbd> + <kbd>Space</kbd>，預設 Eng ↔ 中文；切換後的浮動提示預設顯示 1 秒。</li>
+    <li><strong>選字：</strong>中文輸入字根後按 <kbd>Space</kbd> 選第一候選，亦可按畫面對應的數字、點選候選字或翻頁。</li>
+    <li><strong>翻候選：</strong><kbd>PageUp</kbd>／<kbd>PageDown</kbd>，或在候選框上滾輪「向上＝往右／下一頁；向下＝往左／上一頁」。</li>
+    <li><strong>把文字加括號：</strong>先圈選「如果」，再使用成對符號輸入，即可在支援的文字編輯器中得到 <code>(如果)</code>、<code>「如果」</code> 等。</li>
+    <li><strong>調整設定：</strong>雙擊通知區的蝦米GO圖示，或從右鍵選單選「設定…」。修改後立即生效。</li>
+  </ol>
+  <p class="note">本程式不是 Windows 內建的系統輸入法。它會在支援的桌面文字輸入欄位處理鍵盤輸入；部分受保護或特殊自繪文字框可能無法使用全部功能。</p>
+</section>
+<section id="start">
+  <h2>一、啟動、結束與資料保護</h2>
+  <ul>
+    <li><strong>一般啟動：</strong>完整解壓縮 ZIP，先把自行合法取得的 <code>liu-uni.tab</code> 放入 <code>Packages/Windows/ShamiGo_v0.10.394/LicensedTables/</code>，再執行 ZIP 最外層 <code>Run_Windows.cmd</code>；內層 <code>Run_ShamiGo.cmd</code> 亦可使用。公開版不能只靠 ZIP 內的 CMD 取得不隨附的私人字根。</li>
+    <li><strong>管理員登入自動啟動（選用）：</strong>從 ZIP 最外層執行 <code>Install_Windows.cmd</code>（內層 <code>Enable_ShamiGo_AutoStart_Admin.cmd</code> 亦可） 並<strong>同意一次 Windows UAC</strong>。工具會安裝受保護副本並建立「當前使用者登入時、最高權限」的工作排程。之後登入自動以管理員權限執行，不需每次再確認 UAC。</li>
+    <li><strong>並非開機後的絕對第一個程式：</strong>Windows 不保證所有軟體的啟動順序。本功能不設定登入延遲，但輸入法需要可互動桌面，因此只能在使用者登入後啟動，不能在登入前當作一般服務執行。</li>
+    <li><strong>權限與安全：</strong>排程只適用於以管理員帳戶登入的本人，無需保存密碼或建立 SYSTEM 工作；執行檔位於管理員保護的 <code>Program Files</code> 子資料夾。一般權限執行請仍用 <code>Run_ShamiGo.cmd</code>。</li>
+    <li><strong>完整移除管理員版：</strong>先從通知區退出蝦米GO，從 ZIP 最外層執行 <code>Uninstall_Windows.cmd</code>（內層 <code>Uninstall_ShamiGo_Admin.cmd</code> 亦可） 並同意一次 UAC。工具會先移除本帳戶排程，再移除 <code>Program Files</code> 中的程式。使用者設定、字表與關聯詞會備份到 <code>%LOCALAPPDATA%\ShamiGo\UninstallBackups\</code>；原本的免安裝資料夾不受影響。</li>
+    <li><strong>安裝卡住或失敗：</strong>v303 將安裝器的等待上限設為 60 秒、排程等待上限為 40 秒，不再無期限等待子程序。錯誤可在 <code>%LOCALAPPDATA%\ShamiGo\SetupLogs\</code> 查看。若舊版仍在執行，請先完整結束再重新安裝。</li>
+    <li><strong>停用自動啟動：</strong>在命令提示字元執行 <code>Enable_ShamiGo_AutoStart_Admin.cmd /remove</code>；只移除排程，不清除資料和設定，也不強制結束正在執行的蝦米GO。</li>
+    <li><strong>更新版本：</strong>先完全退出舊版，再由新 ZIP 執行一次管理員自啟動 CMD（需再同意一次 UAC），以更新受保護版本。舊版管理員啟動器與兩個舊 CMD 不再是發行版的日常入口；<code>ShamiGo_AdminSetup.exe</code> 是安裝所需元件，請保留。</li>
+    <li><strong>啟動提示：</strong>工作列附近顯示短暫啟動通知；通知區圖示在程式執行期間保留。</li>
+    <li><strong>開啟設定：</strong>雙擊通知區圖示，或從通知區／浮動框右鍵選單選「設定…」。</li>
+    <li><strong>右鍵選單：</strong>按下並放開右鍵後顯示；選「設定…」時會先結束右鍵選單再開啟設定框，不會同時保留兩個選單。</li>
+    <li><strong>完整結束：</strong>通知區選「結束蝦米GO」，或設定框底部按「終止蝦米GO」。設定框另有「重開蝦米GO」。</li>
+    <li><strong>保存個人設定：</strong>更新前先結束舊版，並備份 <code>ShamiGoCPP.ini</code>、<code>liu.box</code> 與自行設定的 <code>RemoteViewers.txt</code>；不要用發行包預設資料覆蓋個人修改。歷史開發紀錄留在個人完整版的 <code>Projects/</code>；公開版請閱讀根目錄 <code>README.md</code> 與 <code>Docs/CHANGELOG.md</code>。</li>
+  </ul>
+  <p class="note">資料檔的使用與散布權利各有條件。私人測試包不等於允許公開散布其中的字根檔，詳見本頁「資料來源與權利」。</p>
+</section>
+<section id="modes">
+  <h2>二、七種輸入模式與鍵盤快捷鍵</h2>
+  <table><thead><tr><th>模式</th><th>功能／差異</th></tr></thead><tbody>
+    <tr><td>Eng</td><td>英文字母、數字與半形符號；保留成對括號及引號的輔助輸入。</td></tr>
+    <tr><td>中文</td><td>依使用者具備使用權的嘸蝦米繁體字根表輸入漢字、查同音字、候選與罕見字。</td></tr>
+    <tr><td>注音</td><td>臺灣大千式鍵盤的單字注音輸入；依有效聲調及翻頁狀態處理數字選字。</td></tr>
+    <tr><td>拼音</td><td>漢語拼音及聲調查字，可輸入例如 <code>shi4</code>；也可由中文模式暫時進入查字。</td></tr>
+    <tr><td>快碼</td><td>以最短字碼練習輸入，並提示候選字可用的簡短拆碼；需繁體字表。</td></tr>
+    <tr><td>簡體</td><td>使用簡體字根表輸入漢字；需對應資料檔。</td></tr>
+    <tr><td>日文</td><td>日文字根及羅馬字假名輸入；需對應資料檔。</td></tr>
+  </tbody></table>
+  <table><thead><tr><th>快捷鍵</th><th>作用</th></tr></thead><tbody>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>Space</kbd></td><td>切換主要配對，預設 Eng ↔ 中文；可在設定內改成任兩種支援的模式。</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd></td><td>切換第二群組兩個模式；預設為注音 ↔ 拼音。調整 Ctrl+Space 的主要配對時，依七個模式位置交換，不會把第三群組誤放進第二群組。</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Space</kbd></td><td>切換第三群組（v280 新增）：從其他模式按下會進入第三組第一個可用模式；再次按下會依序循環第三組。預設為快碼 → 簡體 → 日文，若主要配對選 Eng ↔ 快碼，則為中文 → 簡體 → 日文。</td></tr>
+    <tr><td><kbd>Shift</kbd> + <kbd>Space</kbd></td><td>半形／全形切換，與中文／英文模式分開記憶。</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>,</kbd></td><td>快速符號候選。</td></tr>
+    <tr><td><kbd>PageUp</kbd>／<kbd>PageDown</kbd></td><td>候選上／下一頁；到邊界停止，不循環。</td></tr>
+    <tr><td><kbd>Esc</kbd>／<kbd>Backspace</kbd></td><td>取消候選／輸入，或依當前狀態退格；錯誤訊息優先清除。</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>PrintScreen</kbd></td><td>暫時保留浮動框以利截圖。</td></tr>
+    <tr><td>浮動框模式名稱／通知區右鍵</td><td>開啟模式與功能選單；通知區圖示雙擊開啟設定。</td></tr>
+  </tbody></table>
+  <h3>群組依選單位置交換</h3>
+  <p>七個輸入模式分成第一組 2 個、第二組 2 個、第三組 3 個。當你改變 Ctrl+Space 主要配對，蝦米GO會把選定模式與原位置的模式直接交換，其他位置保持不動。下表是設定 <strong>Eng ↔ 快碼</strong> 後的實際排列：</p>
+  <table><thead><tr><th>群組／快捷鍵</th><th>切換模式（依序）</th></tr></thead><tbody>
+    <tr><td>第一組 Ctrl+Space</td><td>Eng、快碼</td></tr>
+    <tr><td>第二組 Ctrl+Shift</td><td>注音、拼音</td></tr>
+    <tr><td>第三組 Ctrl+Alt+Space</td><td>中文、簡體、日文</td></tr>
+  </tbody></table>
+  <p>浮動框模式選單亦按這個群組位置顯示，選單文字與實際切換對應一致。若簡體／日文等外部字表尚未載入，第三組快捷鍵會略過不可用的模式。</p>
+  <p>在非英文模式下，按 <kbd>Shift</kbd> + 英文字母可直接輸出大寫／小寫英文字母，大小寫方式可在設定中選擇。全形狀態和輸入模式是兩個獨立選項。</p>
+  <p class="note">若切換到需要外部字表、但檔案尚未載入的模式，該模式可能被停用或顯示錯誤，這不代表輸入法遺失原有設定。</p>
+</section>
+<section id="liu">
+  <h2>三、中文字根、候選字、翻頁與快碼</h2>
+  <h3>字根和選字</h3>
+  <ul>
+    <li>在「中文」模式輸入字根即可產生候選；<kbd>Space</kbd> 確認第一候選，<kbd>V</kbd>、<kbd>R</kbd>、<kbd>S</kbd>、<kbd>F</kbd>、<kbd>W</kbd>、<kbd>L</kbd>、<kbd>C</kbd>、<kbd>B</kbd>、<kbd>K</kbd> 依序對應第 2～10 個候選。保留既有中文字根的延伸字碼判斷，避免搶走有效字根。</li>
+    <li>每頁最多 10 個候選；<kbd>PageUp</kbd>／<kbd>PageDown</kbd>、浮動框上的左右箭頭可翻頁，頁碼只在有多頁時出現。</li>
+    <li><strong>滾輪方向固定：</strong>滑鼠位於候選框時，往上滾＝往右到下一頁；往下滾＝往左到上一頁。最多一個手勢翻一頁，到最前／最後即停止，驅動程式提供的「一次捲多行」不會讓候選一次跳過數頁。</li>
+    <li>中文、簡體、日文與快碼使用上述 V／R／S／F／W／L／C／B／K 選碼鍵時，若候選存在、且這個字母不會構成有效延伸字根，便立即輸出選取的文字，不必再按 Space。例如中文輸入 RRSS 後按 V，會立即輸出「蒜」。若該字母能繼續構成有效的字表或自訂字碼，仍優先當作下一個字根。滑鼠滾輪連續滑動時停用鍵盤選碼，使用分頁鍵可恢復。原有數字鍵與滑鼠選字方式不變；注音／拼音的聲調規則另見下節。</li>
+    <li>錯誤字碼會在<strong>同一個浮動框</strong>內顯示提示，不會另跳錯誤視窗；按 <kbd>Backspace</kbd> 先清提示，再修改字碼。</li>
+  </ul>
+  <h3>快碼與罕見字</h3>
+  <p>「快碼」模式可在候選字旁顯示較短的拆碼，協助記憶；若已輸入最短碼，便不重複提示。例如輸入 <code>YONP</code> 時，可查看「臺」的快碼提示。快碼以目前載入的字根表為準。</p>
+  <p>啟用「罕見字」且提供 <code>liuext.tab</code> 時，罕見字附在一般候選之後，隨一般候選一起跨頁；明亮模式偏紫、黑暗模式偏綠，字體大小與一般候選相同。功能預設關閉。</p>
+  <h3>關聯詞與日文</h3>
+  <p>關聯詞預設關閉。開啟後，選字完成可推薦後續詞組，點選時只插入後續部分而不重複首字；每頁上限 1–10 個，螢幕空間不足會適當減少顯示數量。</p>
+  <p><strong>顯示音標（預設開啟）：</strong>設定框「關聯詞」列左側可切換關聯詞與調整每頁數量，右側另有「顯示音標」選項。選用中文、簡體、日文或拼音的候選漢字後，蝦米GO 會在原本單列浮動訊息框同時顯示該字的臺灣國語注音與帶數字聲調的漢語拼音，例如「你 ㄋㄧˇ ni3」。輕聲注音尾端顯示適中的實心圓點，例如「的 ㄉㄜ• de5」；不是在音節前方放小點。拼音選字優先使用當次實際選取聲調，讓多音字的兩種標示一致。關閉此選項即可同時停用兩種選字後音標提示，且不影響按鍵或候選結果。</p>
+  <p class="note">注音取自現有臺灣讀音資料庫，沒有資料的字或日文假名不會被強行標示國語讀音；非拼音模式的破音字以資料庫優先讀音表示，無法保證符合特定詞語的語境。這版尚未內建簡易字義，避免把有授權或改作限制的辭典內容自行縮寫加入軟體。</p>
+  <p>日文模式可輸入羅馬字再按 <kbd>,</kbd> 輸出平假名，例如 <code>ka,</code> → か；按 <kbd>.</kbd> 則輸出片假名，例如 <code>ka.</code> → カ；部分漢字也能使用字根輸入。</p>
+</section>
+<section id="symbols">
+  <h2>四、標點、特殊符號與長按</h2>
+  <ul>
+    <li>一般中文模式的標點鍵短按可能用於字根；長按 <kbd>.</kbd> 約 0.2 秒以上，可輸出單一半形句點，持續按住不會因鍵盤自動重複而連續輸出。其他支援長按的標點預設門檻約 0.16 秒。</li>
+    <li>部分符號（例如逗號與反引號）可長按直接輸出半形；門檻可在進階設定檔的 <code>LongPressSymbolMS</code> 調整。句點有效門檻至少 200 毫秒。</li>
+    <li>中文模式中，單引號 <kbd>'</kbd> 接著 <kbd>Space</kbd> 可輸出頓號「、」；若接著輸入字根，則進入同音字查詢。</li>
+    <li>中文模式空字碼時單按 <kbd>-</kbd>，會先輸出半形 <code>-</code>，並提供 <code>0 －</code> 候選以改用全形橫線；按 Esc 保留半形符號。</li>
+    <li>使用 <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>,</kbd> 開啟快速符號候選，按畫面提示或以滑鼠選取。</li>
+    <li>未使用中的功能快捷鍵及 <kbd>Ctrl</kbd>／<kbd>Alt</kbd> 組合鍵，盡可能交還前景應用程式處理；各編輯器的自訂快捷鍵仍可能有差異。</li>
+  </ul>
+  <p class="note">句點長按作用於實體按鍵；與 Word 本身的自動校正（例如數字後的全形句點替換）是不同機制。</p>
+</section>
+<section id="pairs">
+  <h2>五、成對符號、自動包覆、Tab 跳出</h2>
+  <h3>自動配對及選取文字包覆</h3>
+  <p>蝦米GO插入 <code>()</code>、<code>[]</code>、<code>{}</code>、<code>「」</code>、<code>""</code>、<code>''</code> 等成對符號時，若沒有選取文字，游標通常留在兩符號中間；若已圈選文字，且編輯器提供可用的文字選取資訊，便插入左右符號包住原文。</p>
+  <table><thead><tr><th>圈選的文字</th><th>輸入的符號</th><th>預期結果</th></tr></thead><tbody>
+    <tr><td>如果</td><td><code>()</code></td><td><code>(如果)</code></td></tr>
+    <tr><td>請輸入</td><td><code>[]</code></td><td><code>[請輸入]</code></td></tr>
+    <tr><td>重要</td><td><code>「」</code></td><td><code>「重要」</code></td></tr>
+    <tr><td>example</td><td><code>""</code></td><td><code>"example"</code></td></tr>
+  </tbody></table>
+  <p>包覆會在原文前後插入符號，不先複製／貼上，不使用剪貼簿；能否保留格式仍取決於應用程式對 Windows UI Automation 文字選取的支援。過長、多重選取或含嵌入物件時會保守停止，不擅自覆蓋原文；不能取得選取範圍時沿用一般配對處理。</p>
+  <h3>「[」在中文模式的特殊規則</h3>
+  <p>標準中文嘸蝦米模式首次按實體 <kbd>[</kbd> 會顯示字表原有的 8 個候選，不立即送字；選到 <code>「</code> 時輸出 <code>「」</code>。在候選仍開啟時，再<strong>獨立</strong>按一次 <kbd>[</kbd>，才額外顯示 <code>0 [</code> 候選，選它後輸出 <code>[]</code>；原 8 個字根候選順序維持不變。長按觸發的鍵盤自動重複不算第二次獨立按鍵。</p>
+  <p>Eng 模式的 <kbd>[</kbd> 可直接產生 <code>[]</code>，<kbd>Shift</kbd> + <kbd>[</kbd> 可產生 <code>{}</code>；<kbd>Shift</kbd> + <kbd>9</kbd> 可產生 <code>()</code>。成對引號依各模式快捷鍵及組字狀態處理。</p>
+  <h3>右符號覆寫、退格與 Tab</h3>
+  <ul>
+    <li>空括號或空引號是蝦米GO剛插入、而且游標仍在中間時，按 <kbd>Backspace</kbd> 可刪除整對。</li>
+    <li>在追蹤中的成對符號內輸入文字後，按 <kbd>Tab</kbd> 可跳過右側結尾符號；多層巢狀會依序處理。</li>
+    <li>游標已在對應右括號／右引號之前，按一次相同的右符號鍵可<strong>跳過已存在</strong>的結尾而不重複輸出；再獨立按同一鍵才輸出另一個結尾符號。</li>
+    <li>點擊別處、切換文字欄位、手動移動游標、貼上或編輯狀態無法確認時，取消危險的跳過／整對刪除推測，優先遵守編輯器原本行為。</li>
+  </ul>
+</section>
+<section id="phonetic">
+  <h2>六、拼音、注音與候選數字規則</h2>
+  <h3>拼音與聲調</h3>
+  <p>拼音模式可輸入 <code>shi4</code>、<code>dao4</code> 等拼音音節；1–4 表示聲調，5 表示輕聲，<code>v</code> 可代替 ü，例如 <code>lve4</code>。<strong>候選字一律依畫面位置標為 0、1、2、…、9</strong>，其中 0 是第一候選、1 是第二候選，並非嘸蝦米的字根編碼。輸入聲調後，鍵盤主列及數字鍵盤的 0–9 都按相同位置選字。</p>
+  <p>未輸入拼音聲調時，實體數字 <kbd>1</kbd>～<kbd>5</kbd> 仍保留為聲調鍵；此時 <kbd>0</kbd>、<kbd>6</kbd>～<kbd>9</kbd> 可選取畫面上同編號的候選，原有 <kbd>F1</kbd>～<kbd>F5</kbd> 快捷鍵仍可選第 6～10 個候選。需要以數字 1～5 選字時，可先按 PageUp／PageDown 進入分頁模式；不會把尚未確定的聲調誤當成選字。</p>
+  <p>例如輸入 <code>hao3</code> 後，<kbd>Space</kbd> 選編號 0（第一候選）、<kbd>V</kbd> 選編號 1（第二候選）、<kbd>R</kbd> 選編號 2（第三候選），依序由 <kbd>S</kbd>／<kbd>F</kbd>／<kbd>W</kbd>／<kbd>L</kbd>／<kbd>C</kbd>／<kbd>B</kbd>／<kbd>K</kbd> 選編號 3～9。未輸入聲調前，為保留 <code>v</code>（ü）等正常拼音，<kbd>Space</kbd> 仍是翻頁而非選字；<kbd>`</kbd> 可從中文模式進入臨時拼音查字。</p>
+  <p>使用 <kbd>PageUp</kbd>／<kbd>PageDown</kbd> 進行正式翻頁後，畫面與鍵盤候選編號都是 <strong>0～9</strong>；按 Space／V／R 等快捷鍵只會選取<strong>目前頁面</strong>的候選，不會意外跳回第一頁。</p>
+  <h3>注音與聲調</h3>
+  <p>注音模式採大千式鍵盤：例如 <code>S U 3</code> 對應 ㄋㄧˇ。鍵盤數字 6、3、4、7 分別對應二、三、四、輕聲；一聲可用 Space。候選字也統一顯示編號 0～9。音調已確定（例如 ㄅㄨˇ）可直接按 <kbd>Space</kbd> 選編號 0、<kbd>V</kbd> 選編號 1，或用主鍵盤與數字鍵盤的 0～9 選同編號候選；尚未確定聲調時，數字保留注音組字鍵，可使用 Shift＋數字鍵選字（Shift＋0 選第一候選），避免搶走注音字根。</p>
+  <h3>滑鼠滾輪後為何不能按數字？</h3>
+  <p><strong>注音／拼音使用滑鼠滾輪移動候選時，鍵盤候選快捷鍵會暫時停用</strong>，包括數字、Space／V 等字母候選捷徑，因為滑動位置可能跨越原本頁面，畫面上的編號容易重複。這時請使用滑鼠點選；若需要用鍵盤選字，先按 <kbd>PageUp</kbd>／<kbd>PageDown</kbd> 切回明確的分頁模式。這是避免誤選的安全設計。</p>
+  <p class="note">Space 與 VRSFWLCBK 候選捷徑只在明確可選的候選狀態啟用；未完成的拼音（如 <code>lve4</code> 的 <code>v</code>）及注音聲母韻母仍照常輸入。0～9 的改動只影響候選顯示與按鍵選取，不會改動字根表、讀音索引或候選排序。</p>
+</section>
+<section id="errors">
+  <h2>七、錯碼推薦、同音查字與自訂詞組</h2>
+  <p><strong>錯碼推薦：</strong>預設關閉。開啟「錯碼推薦」後，當輸入的字根沒有完全符合的候選時，會於浮動框提供可能的修正字，並可用對應的數字或滑鼠確認；結果是啟發式推薦，不代表候選字必然正確。一般有效字碼不經此途徑。</p>
+  <p><strong>同音字：</strong>在中文模式使用 <code>'</code> 加字根（例如 <code>'LDO</code>），依該字根的參考漢字找同音字；此模式按 <kbd>Space</kbd> 為下一頁。也可按 <kbd>`</kbd> 暫時開啟拼音查字。</p>
+  <p><strong>自訂字碼：</strong><code>liu.box</code> 可儲存自訂字根和詞組，程式於啟動時讀取；手動修改後須完整結束並重新開啟。不要在程式正在寫入設定時覆蓋相關資料。</p>
+  <p class="note">錯碼推薦與關聯詞是兩項不同設定；前者處理不正確的字根，後者在已選字後推薦後續詞組。兩者均可個別關閉以減少不必要的候選。</p>
+</section>
+<section id="reference">
+  <h2>八、漢語拼音／注音參考表</h2>
+  <p>以下整理常見拼音與注音對應，方便使用注音鍵盤的使用者查字。不同音節可能有縮寫或拼寫省略規則。</p>
+  <table><thead><tr><th>類別</th><th>拼音</th><th>注音</th></tr></thead><tbody>
+    <tr><td>雙唇音</td><td>b p m f</td><td>ㄅ ㄆ ㄇ ㄈ</td></tr>
+    <tr><td>舌尖音</td><td>d t n l</td><td>ㄉ ㄊ ㄋ ㄌ</td></tr>
+    <tr><td>舌根音</td><td>g k h</td><td>ㄍ ㄎ ㄏ</td></tr>
+    <tr><td>舌面音</td><td>j q x</td><td>ㄐ ㄑ ㄒ</td></tr>
+    <tr><td>翹舌音</td><td>zh ch sh r</td><td>ㄓ ㄔ ㄕ ㄖ</td></tr>
+    <tr><td>平舌音</td><td>z c s</td><td>ㄗ ㄘ ㄙ</td></tr>
+    <tr><td>常見韻母</td><td>a o e ai ei ao ou</td><td>ㄚ ㄛ ㄜ ㄞ ㄟ ㄠ ㄡ</td></tr>
+    <tr><td>鼻音韻尾</td><td>an en ang eng</td><td>ㄢ ㄣ ㄤ ㄥ</td></tr>
+    <tr><td>i 系列</td><td>ia ie iao iu ian in iang ing</td><td>ㄧㄚ ㄧㄝ ㄧㄠ ㄧㄡ ㄧㄢ ㄧㄣ ㄧㄤ ㄧㄥ</td></tr>
+    <tr><td>u 系列</td><td>ua uo uai ui uan un uang</td><td>ㄨㄚ ㄨㄛ ㄨㄞ ㄨㄟ ㄨㄢ ㄨㄣ ㄨㄤ</td></tr>
+    <tr><td>ü 系列</td><td>ü üe üan ün</td><td>ㄩ ㄩㄝ ㄩㄢ ㄩㄣ</td></tr>
+  </tbody></table>
+  <p class="note">zhi、chi、shi、ri、zi、ci、si 的 i 不單獨對應「ㄧ」。在 j、q、x、y 後，ü 通常省略兩點，例如 ju＝ㄐㄩ、qu＝ㄑㄩ。實際候選依載入的字音資料而定。</p>
+</section>
+<section id="settings">
+  <h2>九、浮動框、顯示秒數與設定</h2>
+  <p>通知區圖示雙擊或「設定…」開啟設定框。可調整啟動模式、Ctrl+Space 配對、Shift+字母大小寫、字體、關聯詞、顯示音標、罕見字、錯碼推薦、顯示時間、透明度及視窗位置；設定變更通常立即生效，必要時會寫入個人偏好。</p>
+  <h3>三種不同的顯示時間</h3>
+  <table><thead><tr><th>設定名稱</th><th>預設</th><th>作用</th></tr></thead><tbody>
+    <tr><td>狀態框停留</td><td>5 秒</td><td>一般輸入狀態提示；與 Ctrl+Space 專用倒數獨立。</td></tr>
+    <tr><td>結果框停留</td><td>5 秒</td><td>關聯詞及相關結果提示；不受 Ctrl+Space 改動。</td></tr>
+    <tr><td>Ctrl+Space 切換 → 顯示時間</td><td><strong>1 秒</strong></td><td>設定框第二列：兩個緊湊輸入模式選單之後，同列選擇「預設、1秒、2秒…10秒」；不影響另外兩種計時。</td></tr>
+  </tbody></table>
+  <p><strong>「預設」就是舊版顯示規則，不是 0 秒：</strong>選取「預設」會使用舊式提示／放鍵規則，不是瞬間隱藏。選 1–10 秒則使用獨立的單次倒數；按住 Ctrl 後再放開也會繼續既有倒數，不永久停留。滑鼠停留、截圖保持或固定浮動框位置仍遵守原有保留規則。</p>
+  <h3>位置、外觀及字體</h3>
+  <ul>
+    <li><strong>非固定浮動框：</strong>預設在文字游標右下方，螢幕空間不足則改往合適方向顯示。焦點移回輸入欄位可再次出現；點擊框外關閉暫時候選／提示。</li>
+    <li><strong>固定浮動框位置：</strong>拖曳至希望的位置並維持顯示；只收起暫時候選而保留狀態。固定狀態按住 Ctrl 時可能顯示邊框光暈。固定模式不適用一般到期隱藏規則。</li>
+    <li><strong>淺色／黑暗模式：</strong>設定框、選單及數字輸入框跟隨主題。浮動框可調透明度；候選字會依深淺主題選擇可辨識的顏色。</li>
+    <li><strong>字體：</strong>中文字體／英文字體可個別選取；大小 12、16、20、24（預設）、28、32、36、40；候選字粗體 600、700、800（預設）。</li>
+    <li><strong>關聯詞：</strong>預設關閉，每頁數量可選 1–10；同一列右側的「顯示音標」預設開啟，兩個選項互不影響。罕見字、錯碼推薦也可各自開關。</li>
+    <li><strong>記憶各輸入框狀態：</strong>可記住回到先前文字欄位時的輸入模式／全半形；關閉後使用目前通用狀態。</li>
+    <li><strong>遠端指定：</strong>設定框底部「指定遠端程式…」支援滑鼠提示與多個瀏覽器分頁勾選，詳細操作見下節。</li>
+  </ul>
+  <h3>設定檔與低資源運作</h3>
+  <p><code>ShamiGoCPP.ini</code> 是原生 C++ 程式的個人設定檔；發布包另有舊設定相容用的 <code>ShamiGo.ini</code>。需要手動修改進階參數時，請先結束程式並備份檔案，避免下次儲存覆寫。一般使用者建議直接在設定框操作。</p>
+  <p>程式對候選頁面、畫面繪製及部分字表建立有限快取；UI 採事件驅動，沒有必要時不持續做游標／字庫掃描。開啟選用的設定自動重新載入功能可能產生額外檔案檢查，但不影響模式正確性。這是實作設計，不代表任何電腦都能達到特定 CPU 百分比。</p>
+</section>
+<section id="data">
+  <h2>十、資料檔、字根來源與備份</h2>
+  <p>在設定框按「資料檔」可查閱載入來源與狀態。字表離線讀取；資料不足時相關功能可能停用。變更資料後請完整結束並重新啟動。</p>
+  <table><thead><tr><th>檔案</th><th>用途</th></tr></thead><tbody>
+    <tr><td><code>LicensedTables/liu-uni.tab</code></td><td>中文基本字根。</td></tr>
+    <tr><td><code>LicensedTables/liu-uni2.tab</code></td><td>簡體字根。</td></tr>
+    <tr><td><code>LicensedTables/liu-uni3.tab</code></td><td>相容字根資料。</td></tr>
+    <tr><td><code>LicensedTables/liu-uni4.tab</code></td><td>日文字根。</td></tr>
+    <tr><td><code>LicensedTables/liuphon.tab</code></td><td>同音字查詢的輔助表。</td></tr>
+    <tr><td><code>LicensedTables/liuext.tab</code></td><td>罕見字候選。</td></tr>
+    <tr><td><code>LicensedTables/AssociatedPhrases.cin</code></td><td>關聯詞備援。</td></tr>
+    <tr><td><code>Phrases/phrases.bin</code></td><td>主要關聯詞／上下文錯碼參考。</td></tr>
+    <tr><td><code>Phonetics/mcbopomofo_readings.tsv</code></td><td>注音與拼音共用讀音索引。</td></tr>
+    <tr><td><code>liu.box</code></td><td>自訂字碼與詞組；請備份。</td></tr>
+  </tbody></table>
+  <p><strong>授權提醒：</strong>字根檔及其他第三方來源的使用許可彼此獨立；能讀取或取得檔案不代表可公開複製、上傳或轉售。對外再散布前務必另行確認授權。</p>
+</section>
+<section id="remote">
+  <h2>十一、遠端控制的鍵盤直通</h2>
+  <p>為避免本機與遠端電腦同時攔截 Ctrl+Space、中文字根及候選字鍵，蝦米GO在符合條件的遠端控制視窗中保留實體鍵盤給遠端工具傳送。RustDesk、TeamViewer、AnyDesk、Windows 遠端桌面等常見<strong>桌面客戶端</strong>可透過前景 EXE 辨識；實際能否傳送組合鍵仍受遠端軟體設定影響。</p>
+  <h3>指定其他桌面遠端程式</h3>
+  <ol>
+    <li>先切到遠端控制客戶端視窗，再開啟蝦米GO設定框，使用底部的「指定遠端程式…」選單，指定或取消前一個一般遠端程式。</li>
+    <li>核對顯示的 EXE 名稱，確認它確實是遠端控制<strong>客戶端</strong>，再按確認；立即生效。</li>
+    <li>移除時可在通知區右鍵選「移除已指定遠端程式」，或在設定框的遠端指定選單中取消；自訂名稱保存在 <code>%LOCALAPPDATA%\ShamiGo\RemoteViewers.txt</code>，最多 24 筆。</li>
+  </ol>
+  <h3>可同時指定多個瀏覽器分頁</h3>
+  <ol>
+    <li>打開設定框，滑鼠停留於「指定遠端程式…」可閱讀提示氣泡；點按後進入清單。</li>
+    <li>此清單與通知區的移除子選單會依蝦米GO的明暗模式顯示，含勾選、反白、分隔線與未可選的提示。</li>
+    <li>選擇正在顯示的瀏覽器視窗及真正的瀏覽器分頁（清單會區分不同視窗）；可逐一勾選，最多 32 個臨時目標。也可取消某筆、清除全部或按「完成」。</li>
+    <li>只有<strong>被指定而且仍能辨識身分的分頁</strong>啟用鍵盤直通。同一瀏覽器的其他分頁不應因此全部被放行。</li>
+    <li>關閉指定分頁或其視窗時，臨時指定會失效；退出蝦米GO 後臨時目標也不保留。<strong>若只是斷開網頁內的遠端連線，卻仍開著分頁，請手動取消指定。</strong></li>
+  </ol>
+  <p class="note">分頁辨識依賴瀏覽器的 Windows UI Automation 資訊；特殊自繪工具列、垂直分頁或部分全螢幕介面可能無法辨識，這時程式會保守維持一般本機輸入。不需要瀏覽器擴充套件，也不會將網頁內容上傳。</p>
+</section>
+<section id="troubleshoot">
+  <h2>十二、常見問題、穩定性與檢查方式</h2>
+  <table><thead><tr><th>問題</th><th>建議先檢查</th></tr></thead><tbody>
+    <tr><td>安裝管理員版長時間停住</td><td>請改用 v303 的 <code>Enable_ShamiGo_AutoStart_Admin.cmd</code>，顯示每個步驟並設有逾時；詳細失敗訊息在 <code>%LOCALAPPDATA%\ShamiGo\SetupLogs\</code>。如果正在執行舊版，先結束再安裝。</td></tr>
+    <tr><td>每次開啟都要求 UAC</td><td>若需要登入後自動使用管理員權限，僅於首次設定執行 <code>Enable_ShamiGo_AutoStart_Admin.cmd</code> 並同意一次 UAC；之後登入時由工作排程啟動。手動執行 <code>Run_ShamiGo.cmd</code> 始終是一般權限；不要把 <code>ShamiGo_AdminSetup.exe</code> 當作日常入口。只有管理員帳戶可啟用最高權限自動啟動。</td></tr>
+    <tr><td>Ctrl+Space 設為 1 秒仍停留</td><td>確認不是「固定浮動框位置」、滑鼠沒有停在框上，且沒有截圖固定；完整放開 Ctrl 再觀察。一般狀態框與結果框秒數是分開的設定。</td></tr>
+    <tr><td>中文字根無候選</td><td>檢查目前模式、字根是否有效，以及「資料檔」頁的載入狀態；必要時備份資料並重新啟動。</td></tr>
+    <tr><td>注音／拼音滾輪後無法按數字</td><td>滑動候選時數字選字會停用，請點滑鼠選字；或按 PageUp／PageDown 回到分頁選字。</td></tr>
+    <tr><td>圈選文字後沒有包住</td><td>可能是目標編輯器不提供支援的 UI Automation 選取資訊，或選取過長／包含物件；程式會避免冒險更動原文。</td></tr>
+    <tr><td>遠端輸入仍被本機處理</td><td>檢查遠端軟體的「傳送組合鍵／直接鍵盤」設定，或確認瀏覽器指定的是正確視窗、正確分頁。</td></tr>
+    <tr><td>設定框亮色模式有控制項顏色異常</td><td>切回深色再切淺色重新繪製；若仍有問題，請提供設定頁截圖及 Windows 文字縮放比例。</td></tr>
+    <tr><td>Word 的標點與其他編輯器不同</td><td>先檢查 Word 自動校正、字型或特殊輸入處理；不能直接認定為蝦米GO字碼錯誤。</td></tr>
+  </tbody></table>
+  <p><strong>穩定性優先：</strong>輸入 Hook、游標定位、模擬輸入及 UI Automation 會受 Windows、應用程式權限和文字控制項實作限制。原始碼自動化測試可以降低回歸風險，但不能代替在實際 Windows 11、Word、瀏覽器與遠端工具的手動確認。</p>
+</section>
+<section id="third-party">
+  <h2>十三、第三方資料來源與權利說明</h2>
+  <h3>小麥注音（McBopomofo）資料</h3>
+  <p>蝦米GO將小麥注音（McBopomofo）專案 BPMFBase 所公開的部分單字讀音資料整理為 <code>Phonetics/mcbopomofo_readings.tsv</code>，在啟動時離線載入，供「注音」及「拼音」模式建立漢字候選索引與多音字對應。字根拆碼、候選操作、按鍵事件及介面由蝦米GO自行處理，<strong>不需要安裝或執行小麥注音</strong>。</p>
+  <p>McBopomofo 專案以 MIT 授權公開其程式與相關資料；使用時應依相應授權保留版權及授權文字。來源：<a href="https://github.com/openvanilla/McBopomofo">openvanilla/McBopomofo</a>；其授權文字可參閱隨附的 <code>THIRD_PARTY_NOTICES.md</code>。上述說明並不表示來源專案為蝦米GO提供官方支援或背書。</p>
+  <h3>詞組資料</h3>
+  <p><code>Phrases/phrases.bin</code> 的上游來源為 OhMyBias Android 所整理的萌典詞組；該上游專案標示這一資料來源為 CC0。蝦米GO將其作為關聯詞及上下文錯碼參考，不代表本程式與原專案有隸屬關係。詳細來源及連結見 <code>THIRD_PARTY_NOTICES.md</code>。</p>
+  <h3>字根資料與名稱</h3>
+  <p>「嘸蝦米」用於說明本工具所支援的拆碼方式及相容字表；其相關商標與字庫權利屬各自權利人。蝦米GO不是該輸入法權利人的官方產品，亦不以此聲明主張對其商標或專有字表的權利。程式提供讀取介面，<strong>不表示字根資料已獲得公開複製、再製、轉售或散布許可</strong>；請依使用者持有資料的授權條件使用。</p>
+  <p class="note">本節用於標示技術與資料來源，並不構成對任何第三方權利、授權範圍或特定使用行為合法性的法律保證。如需對外公開發布含第三方字表的安裝包，請先向權利人確認許可條件。</p>
+</section>
+<section id="memory-optimization" style="margin:22px 0;padding:12px 18px;border-top:1px solid #888">
+<h2>記憶體穩定性與演算法最佳化</h2>
+<p>注音鍵位驗證改用固定查表；萬用字根搜尋的暫存記憶體合併配置；設定框的按鈕、卡片、滑桿及切換開關重用相同顏色的 Windows 繪圖資源。功能及選字規則不變。程式啟動時會先準備常見尺寸的設定框繪圖緩衝、Logo 圖像及基本浮動框緩衝，讓第一次打開設定框或開始輸入時也較少需要新建大型緩衝。為避免浪費記憶體，預載設定框緩衝最多 4 MiB，較大尺寸和多頁候選仍依實際使用建立。首次暖機後可減少重複配置，並保留原有的設定框繪圖緩衝重用機制；少量的輸入事件及同音字查詢暫存區也會適性重用，避免長時間使用時反覆配置和釋放。</p>
+<p>Windows 工作管理員的工作集仍會受作業系統調整，記憶體不保證完全固定；應以持續使用後是否穩定、沒有逐次累積以及操作速度是否維持為評估基準。</p>
+</section>
+<footer>蝦米GO · 離線使用說明</footer>
+</main>
+</body>
+</html>

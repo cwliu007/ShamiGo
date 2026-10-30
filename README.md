@@ -1,99 +1,68 @@
 # 蝦米GO（ShamiGo）
 
-**蝦米GO是嘸蝦米輸入法的免安裝外殼。** 蝦米GO並非嘸蝦米的官方產品。核心程式為C++語言，由作者規畫、設計並透過ChatGPT撰寫程式。使用者沿用自己合法取得的嘸蝦米字根資料(可至嘸蝦米官方網站行易有限公司購買嘸蝦米取得字根檔 https://boshiamy.com/ )，在 Windows 上直接啟動輸入。另提供注音、拼音、候選字與其他輔助輸入功能。
+**蝦米GO是嘸蝦米輸入法的免安裝外殼，不是一套新的嘸蝦米輸入法，也不是官方產品。** 它以 C++／Win32 提供 Windows 可攜式輸入介面，Linux 使用 Fcitx5；作者負責實際規畫、設計與修改，並利用 AI 工具協助撰寫程式。
 
-<img width="754" height="138" alt="Recording 2026-10-29 160024" src="https://github.com/user-attachments/assets/1f0cbc51-3e99-4f0d-a3ee-1948f947e821" />
+<img width="754" height="138" alt="蝦米GO Windows 操作畫面" src="https://github.com/user-attachments/assets/1f0cbc51-3e99-4f0d-a3ee-1948f947e821" />
+
+**本儲存庫不含嘸蝦米版權字根，使用者必須自行合法取得字根資料。** 可參考[嘸蝦米官方網站](https://boshiamy.com/)的合法取得方式。本專案並未獲得嘸蝦米官方認可或背書。
 
 ## 下載
 
-點選 GitHub 頁面上的 **Code（程式碼）→ Download ZIP（下載 ZIP）**，將整個儲存庫下載並解壓縮。請保留原本的資料夾結構。
+點選 GitHub 頁面上 **Code → Download ZIP**，下載後**完整解壓縮**並保留資料夾結構。Windows 版可免安裝執行；Linux 版須安裝 `.deb`。請勿只從壓縮檔檢視器執行個別檔案，否則可能找不到程式或字根。
 
-## Windows：免安裝直接使用（建議）
+## Windows：免安裝（建議）
 
-**Windows 版不必安裝，雙擊即可啟動。**
+1. 將自行合法取得的 `liu-uni.tab` 放入 `Packages/Windows/ShamiGo_v0.10.394/LicensedTables/`；其他選用字根資料請參照[字根資料夾說明](Packages/Windows/ShamiGo_v0.10.394/LicensedTables/README.txt)。
+2. 雙擊根目錄的 **`Run_Windows.cmd`**，即可直接啟動。無須安裝，也不會設定自動啟動。
+3. 在 Windows 通知區的蝦米GO圖示按右鍵，可調整設定或結束程式。
 
-1. 將自行合法取得的嘸蝦米字根檔 `liu-uni.tab`，放入 `Windows/LicensedTables/` 資料夾。
-2. 雙擊根目錄的 **`Run_Windows.cmd`**，即可直接使用蝦米GO。
-3. 使用完畢，可在 Windows 通知區的蝦米GO圖示按右鍵，選擇結束程式。
+若需要登入後自動啟動，請改執行 **`Install_Windows.cmd`**，並依提示確認 Windows 管理員權限（UAC）。解除安裝可執行 **`Uninstall_Windows.cmd`**；不影響原本下載的可攜式資料夾。若使用者的登入帳號與 UAC 管理員帳號不同，受保護安裝可能因安全限制而拒絕，請參考操作提示。
 
-免安裝方式不需要先執行安裝程式，也不需要設定登入後自動啟動。保留下載的資料夾，日後即可再次啟動。
+完整功能及操作請見 [Windows 使用說明](Packages/Windows/ShamiGo_v0.10.394/ShamiGo_Help.html)。
 
-## Windows：安裝並自動啟動（選用）
+## Linux：Debian 13／LMDE 7
 
-如果想在每次登入 Windows 時自動啟動蝦米GO，可以使用安裝方式：
-
-1. 先將 `liu-uni.tab` 放入 `Windows/LicensedTables/`。
-2. 雙擊根目錄的 **`Install_Windows.cmd`**，依 Windows 提示同意管理員授權。
-3. 安裝程式會將程式複製到受保護的安裝位置，並設定登入後自動啟動。
-
-若要移除安裝版，請先結束蝦米GO，再執行 **`Uninstall_Windows.cmd`**。原本下載的免安裝資料夾不會因此被刪除。
-
-| 檔案 | 用途 |
-| --- | --- |
-| `Run_Windows.cmd` | **免安裝，直接啟動蝦米GO** |
-| `Install_Windows.cmd` | 安裝蝦米GO，並設定登入後自動啟動 |
-| `Uninstall_Windows.cmd` | 移除已安裝的程式及自動啟動設定 |
-
-詳細操作可參閱 [Windows 使用說明](Windows/ShamiGo_Help.html)。
-
-## Linux：安裝與使用
-
-Linux 版適用於 **Debian 13／LMDE 7（64 位元、Fcitx5）**，需安裝套件才能使用。
-
-在下載的資料夾開啟終端機，執行：
+適用 64 位元（amd64），搭配 Fcitx5。在下載資料夾開啟終端機，執行：
 
 ```sh
 sh Install_Linux.sh
 ```
 
-接著匯入自己合法取得的嘸蝦米字根資料：
+接著匯入自行合法取得的字根資料：
 
 ```sh
 shamigo-setup import-data --source /path/to/LicensedTables
 ```
 
-請將 `/path/to/LicensedTables` 改成實際存放字根檔的資料夾路徑。重新啟動 Fcitx5，並在輸入法清單中啟用蝦米GO。
+將 `/path/to/LicensedTables` 換成實際資料夾，再重新啟動 Fcitx5，於輸入法設定加入蝦米GO。移除時執行 `sh Uninstall_Linux.sh`。Windows VirtualBox 來賓系統的安裝輔助入口為 `Install_Linux_VM_from_Windows.cmd`，請依相關畫面操作；Linux／Wayland 的實際操作可能與 Windows 版有所差異。
 
-移除 Linux 版：
+## 主要功能與限制
 
-```sh
-sh Uninstall_Linux.sh
-```
+Windows 版提供嘸蝦米字根輸入、候選選字與翻頁、注音與拼音輔助、自訂字碼、錯碼提示、關聯詞、成對標點以及可調整的候選框與顯示時間。部分功能需使用者自行提供合法的附加字根檔。Linux 版目前與 Windows 的功能及快捷鍵**尚未完全一致**。
+
+本程式是可攜式輸入外殼，並非 Windows 原生 TSF 輸入法；在密碼欄位、權限較高的視窗、特殊文字框或部分遊戲內可能有相容性限制。
 
 ## 版本
 
-| 平台 | 版本 |
+| 項目 | 版本 |
 | --- | --- |
-| Windows 11（64 位元） | v0.10.394 |
-| Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
+| 個人完整 ZIP 封裝（不公開散布） | v0.10.395 |
+| Windows 11 x64 主程式 | **v0.10.394** |
+| Linux Debian 13／LMDE 7 amd64 | **v0.10.366-1** |
+| macOS | 尚未推出 |
 
-## VirusTotal 公開掃描與安全說明
+此輪更新主要為文件與 GitHub 發行安全性維護；Windows／Linux 執行檔未重新編譯。封裝版號與程式版號不同，並不表示輸入核心已更新。
 
-以下是 [VirusTotal](https://www.virustotal.com/) 對目前 GitHub 發行檔的掃描紀錄，依 SHA-256 對應特定檔案。**若對蝦米GO程式有疑慮，請勿使用。**
+## VirusTotal 與安全查驗
 
-| 發行檔 | 防毒引擎結果 | 掃描報告 |
-| --- | --- | --- |
-| Windows 主程式 `ShamiGo_v0.10.394.exe` | **5 個判定惡意、66 個未偵測、4 個不支援**（共 75） | [VirusTotal](https://www.virustotal.com/gui/file/2d2f0a73b06816080f8275c1304157f9cf7c1cf9f3a279a352f1118fd1af4373/detection) |
-| Windows 安裝輔助程式 `ShamiGo_AdminSetup.exe` | **1 個判定惡意、70 個未偵測、4 個不支援**（共 75） | [VirusTotal](https://www.virustotal.com/gui/file/246729bcc5974a5f20fb5cc91ed725e6e57cafc384a3c5f7aa30b900972cb4fe/detection) |
-| Linux 套件 `shamigo-fcitx5_0.10.366-1_amd64.deb` | **0 個判定惡意、61 個未偵測、14 個不支援**（共 75） | [VirusTotal](https://www.virustotal.com/gui/file/f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f/detection) |
+輸入法需要處理按鍵事件並與視窗互動，這類行為可能觸發防毒軟體的啟發式偵測，**不能直接認定警報是誤判**。若有疑慮請勿執行。以下是原有執行檔的公開掃描紀錄，檢查結果可能隨日期變化：
 
-掃描時間：**2026 年 10 月 29 日約 01:47（臺灣時間）**。報告會隨防毒引擎更新而改變，最新狀態請以連結為準。
+- [Windows v0.10.394 主程式掃描報告](https://www.virustotal.com/gui/file/2d2f0a73b06816080f8275c1304157f9cf7c1cf9f3a279a352f1118fd1af4373/detection)
+- [Windows 安裝輔助程式掃描報告](https://www.virustotal.com/gui/file/246729bcc5974a5f20fb5cc91ed725e6e57cafc384a3c5f7aa30b900972cb4fe/detection)
+- [Linux v0.10.366-1 套件掃描報告](https://www.virustotal.com/gui/file/f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f/detection)
 
-### 為什麼輸入法可能出現防毒偵測？
-
-蝦米GO是嘸蝦米輸入法的免安裝外殼，為了提供快捷鍵、候選字選取及輸出文字等功能，需要處理鍵盤事件並與目前使用中的程式互動。部分安全防護工具會將這類行為與鍵盤監控、自動輸入等具有雙重用途的功能一起檢查，因此**有可能**產生啟發式或機器學習偵測。
-
-另外，`Install_Windows.cmd` 是**選用**的安裝方式，會在使用者同意 Windows 管理員授權後，設定登入時自動啟動。若不需要自動啟動，可以直接使用 `Run_Windows.cmd` 免安裝執行；兩者的作用不同。
-
-**上述只是可能的技術原因，尚未證實是本次各防毒引擎判定的實際原因。** 若對蝦米GO有疑慮，請勿使用。
-
-### 使用者如何查驗？
-
-請從本 GitHub 儲存庫取得發行檔，核對 [SHA256SUMS.txt](SHA256SUMS.txt)，並開啟上方 VirusTotal 報告自行查看。
-
+掃描與雜湊值對應特定執行檔；請使用 [SHA256SUMS.txt](SHA256SUMS.txt) 核對下載的檔案。原報告登錄於 2026 年 10 月 29 日，最新偵測結果以 VirusTotal 網頁為準。
 
 ## 授權
 
-蝦米GO採用**免費使用、保留著作權（Freeware，All Rights Reserved）**的方式提供。使用者可免費下載及使用，Windows 版並支援免安裝直接啟動。免費使用不代表可以任意重新包裝、修改後公開發行或販售作者擁有權利的程式。
-
-完整條款請參閱 [蝦米GO免費使用授權條款](LICENSE.md)。第三方元件、資料及嘸蝦米字根的相關權利，仍依各自的授權規定辦理；資料來源說明請參閱 [第三方資料來源與權利聲明](Windows/THIRD_PARTY_NOTICES.md)。
+蝦米GO採用**免費使用、保留著作權（Freeware / All Rights Reserved）**。免費使用不等於開放原始碼，也不代表能任意修改、重新包裝或販售。詳細條款請見 [授權文件](LICENSE.md) 與 [第三方資料來源聲明](Packages/Windows/ShamiGo_v0.10.394/THIRD_PARTY_NOTICES.md)。字根資料須由使用者自行合法取得，並遵守原權利人的授權規定。
