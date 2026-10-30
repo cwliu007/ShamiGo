@@ -1,20 +1,9 @@
-ShamiGo Windows v0.10.394 (released 2026-10-28)
+蝦米GO Windows v0.10.394（2026-10-28）
 
-Windows application EXE, admin launcher, and admin setup EXE are unchanged
-from the audited v394 binary release. No input algorithm or UI feature version
-is incremented by this documentation / distribution cleanup.
+- 修正 ZIP 啟動入口的版本目錄檢查，改善安裝及解除安裝流程。
+- 加強部分解壓縮及管理員權限錯誤的提示。
+- 新安裝預設：淺色介面、70% 不透明度、狀態／結果提示 2 秒、Ctrl+Space 提示 1 秒。
+- Windows 輸入核心功能未變更；Linux 套件維持 v0.10.366-1。
+- Windows 11 的檔案總管、UAC 與 VirtualBox 互動仍需實機驗證。
 
-v394 includes a corrected version-aware allowlist for its standalone ZIP CMD
-payloads, better partial ZIP extraction support, and administrator setup
-failure diagnostics. New-install settings: light theme, 70 percent opacity,
-2 seconds status/result notifications, 1 second Ctrl+Space hints. Existing
-user data/settings are preserved by the intended installation procedures.
-
-The private distribution retains licensed tables and full source projects.
-The GitHub public distribution strips sources and licensed tables, including
-embedded copies inside CMD and Linux VM archives. Users supply their own
-properly licensed Liu table before starting or setting up a fresh install.
-
-Linux package remains 0.10.366-1. macOS installer is not available.
-Hardware verification of Windows 11 Explorer / UAC / VirtualBox is pending.
-See README.md and Docs/CHANGELOG.md in the release root.
+詳見根目錄 README.md 與 Docs/CHANGELOG.md。

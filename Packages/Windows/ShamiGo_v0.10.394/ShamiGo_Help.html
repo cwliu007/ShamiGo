@@ -139,7 +139,7 @@
 <section id="start">
   <h2>一、啟動、結束與資料保護</h2>
   <ul>
-    <li><strong>一般啟動：</strong>完整解壓縮 ZIP，先把自行合法取得的 <code>liu-uni.tab</code> 放入 <code>Packages/Windows/ShamiGo_v0.10.394/LicensedTables/</code>，再執行 ZIP 最外層 <code>Run_Windows.cmd</code>；內層 <code>Run_ShamiGo.cmd</code> 亦可使用。公開版不能只靠 ZIP 內的 CMD 取得不隨附的私人字根。</li>
+    <li><strong>一般啟動：</strong>完整解壓縮 ZIP，先把自行合法取得的 <code>liu-uni.tab</code> 放入 <code>Packages/Windows/ShamiGo_v0.10.394/LicensedTables/</code>，再執行 ZIP 最外層 <code>Run_Windows.cmd</code>；內層 <code>Run_ShamiGo.cmd</code> 亦可使用。</li>
     <li><strong>管理員登入自動啟動（選用）：</strong>從 ZIP 最外層執行 <code>Install_Windows.cmd</code>（內層 <code>Enable_ShamiGo_AutoStart_Admin.cmd</code> 亦可） 並<strong>同意一次 Windows UAC</strong>。工具會安裝受保護副本並建立「當前使用者登入時、最高權限」的工作排程。之後登入自動以管理員權限執行，不需每次再確認 UAC。</li>
     <li><strong>並非開機後的絕對第一個程式：</strong>Windows 不保證所有軟體的啟動順序。本功能不設定登入延遲，但輸入法需要可互動桌面，因此只能在使用者登入後啟動，不能在登入前當作一般服務執行。</li>
     <li><strong>權限與安全：</strong>排程只適用於以管理員帳戶登入的本人，無需保存密碼或建立 SYSTEM 工作；執行檔位於管理員保護的 <code>Program Files</code> 子資料夾。一般權限執行請仍用 <code>Run_ShamiGo.cmd</code>。</li>
@@ -151,9 +151,9 @@
     <li><strong>開啟設定：</strong>雙擊通知區圖示，或從通知區／浮動框右鍵選單選「設定…」。</li>
     <li><strong>右鍵選單：</strong>按下並放開右鍵後顯示；選「設定…」時會先結束右鍵選單再開啟設定框，不會同時保留兩個選單。</li>
     <li><strong>完整結束：</strong>通知區選「結束蝦米GO」，或設定框底部按「終止蝦米GO」。設定框另有「重開蝦米GO」。</li>
-    <li><strong>保存個人設定：</strong>更新前先結束舊版，並備份 <code>ShamiGoCPP.ini</code>、<code>liu.box</code> 與自行設定的 <code>RemoteViewers.txt</code>；不要用發行包預設資料覆蓋個人修改。歷史開發紀錄留在個人完整版的 <code>Projects/</code>；公開版請閱讀根目錄 <code>README.md</code> 與 <code>Docs/CHANGELOG.md</code>。</li>
+    <li><strong>保存個人設定：</strong>更新前先結束舊版，並備份 <code>ShamiGoCPP.ini</code>、<code>liu.box</code> 與自行設定的 <code>RemoteViewers.txt</code>；不要用發行包預設資料覆蓋個人修改。</li>
   </ul>
-  <p class="note">資料檔的使用與散布權利各有條件。私人測試包不等於允許公開散布其中的字根檔，詳見本頁「資料來源與權利」。</p>
+  <p class="note">字根資料的使用與散布須遵守原權利人的授權條件。</p>
 </section>
 <section id="modes">
   <h2>二、七種輸入模式與鍵盤快捷鍵</h2>
