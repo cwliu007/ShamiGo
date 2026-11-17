@@ -1,27 +1,9 @@
 {
   "product": "ShamiGo",
-  "windows": {
-    "version": "0.10.394",
-    "architecture": "x64",
-    "platform": "Windows 11",
-    "released": "2026-10-28"
-  },
-  "linux": {
-    "version": "0.10.366",
-    "package_version": "0.10.366-1",
-    "architecture": "amd64",
-    "platforms": [
-      "Debian 13",
-      "LMDE 7"
-    ]
-  },
-  "macOS": {
-    "status": "not_available"
-  },
-  "note": "ZIP package v0.10.395; original Windows executable v0.10.394 and Linux .deb v0.10.366-1 are unchanged",
-  "package": {
-    "version": "0.10.395",
-    "released": "2026-10-30",
-    "description": "documentation consistency, GitHub publication safety and release auditing"
-  }
+  "release": "v0.10.607",
+  "windows": "0.10.607",
+  "linux_prebuilt": "0.10.366-1",
+  "macOS": "not included",
+  "public_archive": "ShamiGo_v0.10.607_Public.zip",
+  "sha256": "703aaf4aae85b758cdcf90b5abbfcbb8aa26e6650a5f3f35c4e658291d07aaa6"
 }

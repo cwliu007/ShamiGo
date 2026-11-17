@@ -6,16 +6,16 @@
 
 ## 下載
 
-按 GitHub 頁面的 **Code → Download ZIP**，完整解壓縮並保留原有資料夾結構。嘸蝦米字根須由使用者自行合法取得，可參考[嘸蝦米官方網站](https://boshiamy.com/)。
+下載 **[ShamiGo v0.10.607 公開安裝 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607/ShamiGo_v0.10.607_Public.zip)**，完整解壓縮並保留資料夾結構。嘸蝦米字根須自行合法取得，可參考[嘸蝦米官方網站](https://boshiamy.com/)；本公開版不含字根與開發原始碼。
 
 ## Windows：免安裝與安裝
 
-1. 將合法取得的 `liu-uni.tab` 放入 `Packages/Windows/ShamiGo_v0.10.394/LicensedTables/`。
+1. 將合法取得的 `liu-uni.tab` 放入 `Packages/Windows/ShamiGo/LicensedTables/`。
 2. 雙擊根目錄 **`Run_Windows.cmd`**，即可免安裝使用。
 3. 若希望登入 Windows 後自動啟動，執行 **`Install_Windows.cmd`**，並依提示確認管理員權限。
 4. 如需解除安裝，先結束程式，再執行 **`Uninstall_Windows.cmd`**。
 
-免安裝版不會自行設定登入啟動。其他選用字表請參閱[字根資料夾說明](Packages/Windows/ShamiGo_v0.10.394/LicensedTables/README.txt)；詳細操作見 [Windows 使用說明](Packages/Windows/ShamiGo_v0.10.394/ShamiGo_Help.html)。
+免安裝版不會自行設定登入啟動。其他字根說明與完整 Windows 操作說明，請參閱下載 ZIP 內的 `LicensedTables/README.txt` 與 `ShamiGo_Help.html`。
 
 ## Linux：Debian 13／LMDE 7
 
@@ -35,7 +35,7 @@ shamigo-setup import-data --source /path/to/LicensedTables
 
 ## 功能與相容性
 
-Windows 版提供字根輸入、候選字選取與翻頁、注音與拼音輔助、關聯詞、錯碼提示、自訂字碼、成對標點，以及可調整的浮動候選框。部分功能需對應的合法字根資料。
+Windows 版提供繁簡中文嘸蝦米輸入、英文拼字檢查與建議、候選字選取、快碼提示、注音與拼音輔助、日文模式、自訂字碼、快捷鍵切換，以及支援深淺主題的稻穗浮動框。另有英文詞義泡泡框、英漢及漢英搜尋、查字歷史、字級調整與可調音量的打字聲（預設靜音）。部分功能需要使用者自行提供合法字根。
 
 蝦米GO不是 Windows 原生 TSF 輸入法，部分密碼欄位、系統管理員視窗或特殊文字框可能無法正常使用。Linux 版的功能與快捷鍵尚未完全與 Windows 一致。
 
@@ -43,12 +43,12 @@ Windows 版提供字根輸入、候選字選取與翻頁、注音與拼音輔助
 
 | 平台 | 版本 |
 | --- | --- |
-| Windows 11（64 位元） | v0.10.394 |
+| Windows 11（64 位元） | v0.10.607 |
 | Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
-| macOS | 尚未推出 |
+| macOS | 此公開 ZIP 尚未提供可直接安裝版本 |
 
 ## 安全與授權
 
-輸入輔助程式需要處理按鍵事件，可能觸發防毒軟體偵測；警報是否誤判仍須自行查證。可參考 VirusTotal 的 [Windows 主程式](https://www.virustotal.com/gui/file/2d2f0a73b06816080f8275c1304157f9cf7c1cf9f3a279a352f1118fd1af4373/detection)、[安裝工具](https://www.virustotal.com/gui/file/246729bcc5974a5f20fb5cc91ed725e6e57cafc384a3c5f7aa30b900972cb4fe/detection)及 [Linux 套件](https://www.virustotal.com/gui/file/f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f/detection)掃描紀錄，並以 [SHA256SUMS.txt](SHA256SUMS.txt) 核對檔案。
+輸入輔助程式需要處理按鍵事件，可能觸發防毒軟體偵測。請以 [SHA256SUMS.txt](SHA256SUMS.txt) 核對此版下載檔，勿為了安裝任意關閉系統安全防護。本公開版不含私人字根、ICQ 原音效或開發原始碼。
 
-蝦米GO採**免費使用、保留著作權**方式提供。使用前請閱讀 [授權條款](LICENSE.md)及[第三方資料來源聲明](Packages/Windows/ShamiGo_v0.10.394/THIRD_PARTY_NOTICES.md)。
+蝦米GO採**免費使用、保留著作權**方式提供。使用前請閱讀 [授權條款](LICENSE.md)及[第三方資料來源聲明](THIRD_PARTY_NOTICES.md)。
