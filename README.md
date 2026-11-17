@@ -6,7 +6,7 @@
 
 ## 下載
 
-下載 **[ShamiGo v0.10.607 公開安裝 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607/ShamiGo_v0.10.607_Public.zip)**，完整解壓縮並保留資料夾結構。嘸蝦米字根須自行合法取得，可參考[嘸蝦米官方網站](https://boshiamy.com/)；本公開版不含字根與開發原始碼。
+下載 **[ShamiGo v0.10.607 修正版公開安裝 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-p1/ShamiGo_v0.10.607-p1_Public.zip)**，完整解壓縮並保留資料夾結構。嘸蝦米字根須自行合法取得，可參考[嘸蝦米官方網站](https://boshiamy.com/)；本公開版不含字根與開發原始碼。
 
 ## Windows：免安裝與安裝
 
@@ -49,6 +49,6 @@ Windows 版提供繁簡中文嘸蝦米輸入、英文拼字檢查與建議、候
 
 ## 安全與授權
 
-輸入輔助程式需要處理按鍵事件，可能觸發防毒軟體偵測。請以 [SHA256SUMS.txt](SHA256SUMS.txt) 核對此版下載檔，勿為了安裝任意關閉系統安全防護。本公開版不含私人字根、ICQ 原音效或開發原始碼。
+輸入輔助程式需要處理按鍵事件，可能觸發防毒軟體偵測。請以 [SHA256SUMS.txt](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-p1/SHA256SUMS.txt) 核對此版下載檔，勿為了安裝任意關閉系統安全防護。本公開版不含私人字根、ICQ 原音效或開發原始碼。
 
 蝦米GO採**免費使用、保留著作權**方式提供。使用前請閱讀 [授權條款](LICENSE.md)及[第三方資料來源聲明](THIRD_PARTY_NOTICES.md)。
