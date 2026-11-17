@@ -1,4 +1,4 @@
-name: Publish verified ShamiGo v0.10.607
+name: Publish ShamiGo v0.10.607 public installer folders
 on:
   push:
     branches:
@@ -6,45 +6,71 @@ on:
 permissions:
   contents: write
 jobs:
-  publish:
+  publish-folders:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Rebuild public archive and verify
+        with:
+          fetch-depth: 0
+      - name: Rebuild and validate published binary archive
         shell: bash
         run: |
           set -euo pipefail
-          cat release_parts/ShamiGo_v0.10.607_Public.zip.part* > ShamiGo_v0.10.607_Public.zip
-          echo "703aaf4aae85b758cdcf90b5abbfcbb8aa26e6650a5f3f35c4e658291d07aaa6  ShamiGo_v0.10.607_Public.zip" | sha256sum -c -
+          cat release_parts/ShamiGo_v0.10.607_Public.zip.part* > "$RUNNER_TEMP/ShamiGo_v0.10.607_Public.zip"
+          echo "703aaf4aae85b758cdcf90b5abbfcbb8aa26e6650a5f3f35c4e658291d07aaa6  $RUNNER_TEMP/ShamiGo_v0.10.607_Public.zip" | sha256sum -c -
           python3 - <<'PY'
-          import zipfile, hashlib, pathlib
-          p=pathlib.Path("ShamiGo_v0.10.607_Public.zip")
+          import hashlib, io, pathlib, tarfile, zipfile
+          p=pathlib.Path(__import__('os').environ['RUNNER_TEMP'])/'ShamiGo_v0.10.607_Public.zip'
+          forbidden={'.tab','.cin','.box','.wav','.cpp','.c','.h','.hpp','.mm','.m','.sln','.vcxproj','.pdb','.obj','.o'}
           with zipfile.ZipFile(p) as z:
               files=z.namelist()
-              assert z.testzip() is None
-              assert len(files)==56, len(files)
-              forbidden={".tab",".cin",".box",".wav",".cpp",".c",".h",".hpp",".mm",".m",".sln",".vcxproj"}
-              assert not any(pathlib.PurePosixPath(x).suffix.lower() in forbidden for x in files)
-              assert not any(x.startswith(("Projects/","Tools/LexiconSources/","GitHub_Release_Staging/")) for x in files)
-              lines=z.read("SHA256SUMS.txt").decode().splitlines()
-              assert len(lines)==len(files)-1
-              for line in lines:
-                  digest,name=line.split("  ",1)
+              assert z.testzip() is None and len(files)==56, 'Unexpected public ZIP content'
+              assert len(set(x.lower() for x in files))==len(files), 'Duplicate filename'
+              for name in files:
+                  path=pathlib.PurePosixPath(name)
+                  assert not path.is_absolute() and '..' not in path.parts and path.suffix.lower() not in forbidden, name
+                  assert not name.startswith(('Projects/','Tools/LexiconSources/','GitHub_Release_Staging/','.github/')),name
+                  if name.endswith(('.tar.gz','.tar.xz')):
+                      with tarfile.open(fileobj=io.BytesIO(z.read(name)),mode='r:*') as t:
+                          for member in t.getmembers():
+                              assert pathlib.PurePosixPath(member.name).suffix.lower() not in forbidden,member.name
+              manifest=z.read('SHA256SUMS.txt').decode().splitlines()
+              assert len(manifest)==len(files)-1
+              for line in manifest:
+                  digest, name=line.split('  ',1)
                   assert hashlib.sha256(z.read(name)).hexdigest()==digest,name
-          print("Public release verified.")
+              assert 'Install_Windows.cmd' in files and 'Packages/Windows/ShamiGo/ShamiGo.exe' in files
+              assert 'Packages/Linux/shamigo-fcitx5_0.10.366-1_amd64.deb' in files
+          print('Verified public ZIP without sources or private tables')
           PY
-      - name: Publish GitHub release asset
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Restore public installation folders to main
         shell: bash
         run: |
           set -euo pipefail
-          if gh release view v0.10.607 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload v0.10.607 ShamiGo_v0.10.607_Public.zip --clobber --repo "$GITHUB_REPOSITORY"
-          else
-            gh release create v0.10.607 ShamiGo_v0.10.607_Public.zip \
-              --repo "$GITHUB_REPOSITORY" \
-              --target "$GITHUB_SHA" \
-              --title "ShamiGo v0.10.607 (Windows public binary)" \
-              --notes "Public source-free Windows v0.10.607 package with Linux v0.10.366 prebuilt. Licensed Boshiamy tables are not included. macOS binary is not included. Check README before installation."
+          git fetch origin main:refs/remotes/origin/main
+          git worktree add --detach "$RUNNER_TEMP/shamigo-main" refs/remotes/origin/main
+          python3 - <<'PY'
+          import os, pathlib, zipfile
+          zpath=pathlib.Path(os.environ['RUNNER_TEMP'])/'ShamiGo_v0.10.607_Public.zip'
+          dest=pathlib.Path(os.environ['RUNNER_TEMP'])/'shamigo-main'
+          keep_existing={'.gitignore','LICENSE.md','README.md','SHA256SUMS.txt','THIRD_PARTY_NOTICES.md','VERSION.json'}
+          with zipfile.ZipFile(zpath) as z:
+              for entry in z.infolist():
+                  name=entry.filename
+                  if name in keep_existing or name.endswith('/'):
+                      continue
+                  target=dest/name
+                  target.parent.mkdir(parents=True,exist_ok=True)
+                  target.write_bytes(z.read(entry))
+          print('Public installation directories restored to worktree')
+          PY
+          cd "$RUNNER_TEMP/shamigo-main"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes required'
+            exit 0
           fi
+          git commit -m "release: restore ShamiGo v0.10.607 public install files to main"
+          git push origin HEAD:main
