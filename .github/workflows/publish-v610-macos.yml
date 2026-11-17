@@ -1,0 +1,156 @@
+name: Publish ShamiGo v0.10.610 macOS arm64
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-v610-macos.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-publish:
+    runs-on: macos-latest
+    steps:
+      - name: Check out current public Windows and Linux files
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Fetch verified macOS public overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/release/v0.10.610-macos-stage:refs/remotes/origin/release/v0.10.610-macos-stage'
+
+      - name: Rebuild macOS ZIP using identical public ECDICT archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, io, os, pathlib, re, subprocess, tarfile, zipfile
+          root = pathlib.Path.cwd()
+          stage = pathlib.Path(os.environ['RUNNER_TEMP']) / 'ShamiGo_macOS_610_public'
+          stage.mkdir(parents=True, exist_ok=False)
+          payload = pathlib.Path(os.environ['RUNNER_TEMP']) / 'shamigo_public_mac_overlay.tar.gz'
+          ref = 'origin/release/v0.10.610-macos-stage'
+          with payload.open('wb') as out:
+              for i in range(11):
+                  subprocess.run(['git', 'show', f'{ref}:mac_release_payload/part{i:02d}.bin'],
+                                 check=True, stdout=out)
+          actual = hashlib.sha256(payload.read_bytes()).hexdigest()
+          if actual != '0a17a04808a87502eabe3862151a674fe4aa5616b023dc9f97dc69890c865c9a':
+              raise SystemExit('Public macOS overlay hash mismatch: ' + actual)
+          with tarfile.open(payload, 'r:gz') as archive:
+              members = archive.getmembers()
+              if len(members) != 17:
+                  raise SystemExit('Unexpected macOS application payload size/count')
+              for member in members:
+                  path = pathlib.PurePosixPath(member.name)
+                  if (not member.isfile() or path.is_absolute() or
+                      any(part in ('..', '.') for part in path.parts) or
+                      member.name.startswith(('__MACOSX/', 'Projects/', '.github/')) or
+                      re.search(r'(?i)\.(tab|cin|box|cpp|c|mm|hpp|h|swift)$', member.name)):
+                      raise SystemExit('Forbidden payload member: ' + member.name)
+                  destination = stage.joinpath(*path.parts)
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  with archive.extractfile(member) as source:
+                      destination.write_bytes(source.read())
+                  destination.chmod(member.mode & 0o777)
+          # Reuse files already distributed to Windows/Linux users, not source code
+          # and not the user's licensed Boshiamy tables. Verify uncompressed bytes.
+          resources = stage / 'ShamiGo.app/Contents/Resources'
+          dictionaries = [
+              ('Data/EnglishECDICT.tar.xz', 'EnglishECDICT.tsv',
+               '669341bbf6d27355eca1dcadb54559ef46a4bb22f5c5d97ac411062e64978497'),
+              ('Data/EnglishChineseReverse.tar.xz', 'EnglishChineseReverse.tsv',
+               'f9a7a967baeda770aed8305e94f8e2c05ac892faeb797a7dd367cdaf6f168472'),
+          ]
+          for archive_path, name, expected in dictionaries:
+              with tarfile.open(root / archive_path, 'r:xz') as archive:
+                  members = archive.getmembers()
+                  if len(members) != 1 or not members[0].isfile() or members[0].name != name:
+                      raise SystemExit('Unexpected public dictionary layout: ' + archive_path)
+                  with archive.extractfile(members[0]) as data:
+                      content = data.read()
+              if hashlib.sha256(content).hexdigest() != expected:
+                  raise SystemExit('Mismatch in existing public dictionary: ' + name)
+              (resources / name).write_bytes(content)
+              (resources / name).chmod(0o644)
+          files = sorted(p for p in stage.rglob('*') if p.is_file())
+          if len(files) != 19:
+              raise SystemExit('Public archive file count is not 19')
+          for p in files:
+              rel = p.relative_to(stage).as_posix()
+              if (p.is_symlink() or rel.startswith('Projects/') or
+                      re.search(r'(?i)\.(tab|cin|box|cpp|c|mm|hpp|h|swift)$', rel)):
+                  raise SystemExit('Private or source file in output: ' + rel)
+          assert hashlib.sha256((stage/'ShamiGo.app/Contents/MacOS/ShamiGoIME').read_bytes()).hexdigest() == '2f21a6721b5f16934b9481aa4364ab6eeee78480be2d78326c965fbf3b9b2aad'
+          assert hashlib.sha256((stage/'Install_ShamiGo_Mac.command').read_bytes()).hexdigest() == 'addf2fda55107a7a61963fe056643bba89159fc5fcae28e2568d1e2bea08f8cc'
+          assert hashlib.sha256((stage/'ShamiGo.app/Contents/_CodeSignature/CodeResources').read_bytes()).hexdigest() == '767683c6187785659bdadae3f2f95206a780ed947b4c8df336e83b6acc62f763'
+          archive_name = 'ShamiGo_v0.10.610_macOS_arm64_Public.zip'
+          output = root / archive_name
+          with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+              for file in files:
+                  archive.write(file, arcname=file.relative_to(stage).as_posix())
+          with zipfile.ZipFile(output) as archive:
+              if archive.testzip() is not None or len(archive.namelist()) != 19:
+                  raise SystemExit('Release ZIP CRC/file-list validation failed')
+          checksum = hashlib.sha256(output.read_bytes()).hexdigest()
+          (root / 'ShamiGo_macOS_SHA256SUMS.txt').write_text(checksum + '  ' + archive_name + '\n')
+          print('Rebuilt and checked', archive_name, output.stat().st_size, checksum)
+          PY
+
+      - name: Verify native Mac app and installer on macOS
+        shell: bash
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/ShamiGo_macOS_610_public/ShamiGo.app"
+          /usr/bin/codesign --verify --strict --verbose=2 "$app"
+          /usr/bin/lipo -archs "$app/Contents/MacOS/ShamiGoIME" | grep -qw arm64
+          /usr/bin/lipo -archs "$RUNNER_TEMP/ShamiGo_macOS_610_public/shamigo_tis_tool" | grep -qw arm64
+          /usr/bin/plutil -lint "$app/Contents/Info.plist"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$app/Contents/Info.plist")" = 'tw.shamigo.inputmethod.macos'
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$app/Contents/Info.plist")" = '0.10.610'
+          for file in Install_ShamiGo_Mac.command Uninstall_ShamiGo_Mac.command Install_External_Tables.sh; do
+            /bin/bash -n "$RUNNER_TEMP/ShamiGo_macOS_610_public/$file"
+          done
+          echo 'Native macOS code-signature, architecture, app identity and installer syntax checked.'
+          echo 'NOTE: This app is ad-hoc signed and has NOT been notarized by Apple.'
+
+      - name: Publish macOS arm64 binary ZIP as a separate release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > mac_release_notes.txt <<'EOF'
+          ## 蝦米GO v0.10.610 — macOS Apple Silicon 公開版
+
+          - 適用 Apple Silicon (arm64)，macOS 14 或更新版本；不支援 Intel Mac。
+          - 此 ZIP 含編譯好的 ShamiGo.app、安裝／解除安裝腳本及英文詞典，不含嘸蝦米字根、私人資料或產品原始碼。
+          - 解壓縮後，在「終端機」進入該資料夾，執行：`/bin/bash Install_ShamiGo_Mac.command`。
+          - 沒有字根仍可安裝。可自行合法取得 `liu-uni.tab` 放進 `LicensedTables/`，安裝器會匯入使用者資料夾。事後補入時，可執行 `Install_External_Tables.sh` 匯入，並登出再登入。
+          - 安裝位置：`~/Library/Input Methods/ShamiGo.app`；外部字根：`~/Library/Application Support/ShamiGo/LicensedTables/`。
+          - **注意：目前是 ad-hoc 簽章，未經 Apple Developer ID 簽署及 Apple 公證。** Mac 可能阻擋下載後的 App；請依 macOS「系統設定 > 隱私權與安全性」提供的個別允許流程處理，勿全面停用 Gatekeeper。
+          - 請在本機測試輸入法出現、實際打字與登入後啟動。CI 驗證不等於使用者端安裝測試。
+
+          Windows／Linux 下載請使用 `v0.10.607-onefolder` Release。
+          EOF
+          tag='v0.10.610-macos'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" ShamiGo_v0.10.610_macOS_arm64_Public.zip ShamiGo_macOS_SHA256SUMS.txt --clobber
+          else
+            gh release create "$tag" ShamiGo_v0.10.610_macOS_arm64_Public.zip ShamiGo_macOS_SHA256SUMS.txt \
+              --target "$GITHUB_SHA" \
+              --title 'ShamiGo v0.10.610 — macOS Apple Silicon arm64' \
+              --notes-file mac_release_notes.txt
+          fi
+
+      - name: Remove temporary public payload branch after successful release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X DELETE 'repos/cwliu007/ShamiGo/git/refs/heads/release/v0.10.610-macos-stage' || true
