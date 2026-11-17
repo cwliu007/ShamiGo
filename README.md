@@ -92,7 +92,8 @@ Finder 會直接開啟該資料夾。將自己合法取得的 `liu-uni.tab` 放�
     curl -fL --retry 3 -o "$ZIP" "$URL"
   fi
   printf '%s  %s\n' '57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3' "$ZIP" | shasum -a 256 -c -
-  read -r -p '確定永久刪除蝦米GO及所有字根、設定？輸入 YES：' ANSWER
+  printf '%s' '確定永久刪除蝦米GO及所有字根、設定？輸入 YES：'
+  IFS= read -r ANSWER
   [[ "$ANSWER" == YES ]] || { echo '已取消'; exit 1; }
   DIR="$(mktemp -d -t shamigo-uninstall)"
   trap 'rm -rf "$DIR"' EXIT
