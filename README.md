@@ -38,53 +38,63 @@ shamigo-setup import-data --source /path/to/LicensedTables
 
 ## macOS：Apple Silicon
 
-適用 **macOS 14 或更新版本的 Apple Silicon（arm64）Mac**，不支援 Intel Mac。這是已編譯的安裝包，不需要自行編譯。
+適用 **macOS 14 或更新版本的 Apple Silicon（arm64）Mac**，不支援 Intel Mac。公開版已包含編譯完成的 `ShamiGo.app`，不需要自行編譯。
 
-### 安裝：下載 ZIP 後，複製指令到終端機
+### 自動下載與安裝（終端機）
 
-1. 下載 **[macOS 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip)**，將 ZIP 存到 Mac 的「下載項目」（`~/Downloads`）。**不用先解壓縮。**
-2. 開啟「終端機」（Terminal），複製以下**整段指令**並貼上執行：
+開啟 Mac 的「終端機」（Terminal），**複製以下整段指令並貼上執行**。不需要事先下載或解壓縮 ZIP：
 
 ```bash
 (
   set -e
-  ZIP="$HOME/Downloads/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
-  [ -f "$ZIP" ] || { echo "找不到下載的 ShamiGo ZIP：$ZIP"; exit 1; }
   DIR="$(mktemp -d -t shamigo-install)"
   trap 'rm -rf "$DIR"' EXIT
+  curl -fL --retry 3 -o "$DIR/ShamiGo.zip" \
+    "https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
   printf '%s  %s\n' \
     '57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3' \
-    "$ZIP" | shasum -a 256 -c -
-  ditto -x -k "$ZIP" "$DIR"
+    "$DIR/ShamiGo.zip" | shasum -a 256 -c -
+  ditto -x -k "$DIR/ShamiGo.zip" "$DIR"
   /bin/bash "$DIR/Install_ShamiGo_Mac.command"
 )
 ```
 
-指令會核對下載檔的 SHA-256、暫時解壓、執行內附的安裝程式，再清理暫存檔。**請勿使用 `sudo`。** 安裝後從 Apple 選單登出再登入，然後在「系統設定 → 鍵盤 → 文字輸入 → 編輯」加入 **蝦米GO／ShamiGo**。
+指令會從 [GitHub macOS 公開版](https://github.com/cwliu007/ShamiGo/releases/tag/v0.10.610-macos) 下載 ZIP，驗證 SHA-256，暫時解壓並執行安裝程式，最後清理暫存檔。**不需要使用 `sudo`。**
 
-即使尚未提供字根也能安裝；日後將合法取得的 `liu-uni.tab` 放到 `~/Library/Application Support/ShamiGo/LicensedTables/`，重新登入後即可載入中文輸入資料。
+安裝完成後，請從 Apple 選單**登出再登入**，再到「系統設定 → 鍵盤 → 文字輸入 → 編輯」加入 **蝦米GO／ShamiGo**。
 
-### 解除安裝：從下載的 ZIP 執行
+### 自動下載與解除安裝（終端機）
 
-保留下載的 ZIP，開啟「終端機」，貼上以下整段指令：
+若要解除安裝，直接在「終端機」貼上以下整段指令，**不需要保留之前下載的 ZIP**：
 
 ```bash
 (
   set -e
-  ZIP="$HOME/Downloads/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
-  [ -f "$ZIP" ] || { echo "找不到下載的 ShamiGo ZIP：$ZIP"; exit 1; }
   DIR="$(mktemp -d -t shamigo-uninstall)"
   trap 'rm -rf "$DIR"' EXIT
-  ditto -x -k "$ZIP" "$DIR"
+  curl -fL --retry 3 -o "$DIR/ShamiGo.zip" \
+    "https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
+  printf '%s  %s\n' \
+    '57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3' \
+    "$DIR/ShamiGo.zip" | shasum -a 256 -c -
+  ditto -x -k "$DIR/ShamiGo.zip" "$DIR"
   /bin/bash "$DIR/Uninstall_ShamiGo_Mac.command"
 )
 ```
 
-解除安裝程式會切換至 ABC，停用蝦米GO輸入來源，結束程式並刪除目前使用者的 `~/Library/Input Methods/ShamiGo.app`。**個人字根與設定資料會保留**，不會刪除其他輸入法；完成後請登出再登入。
+這會重新下載並驗證同一份公開版 ZIP，再執行內附的解除安裝程式。解除安裝會停止並移除目前使用者的 ShamiGo 輸入法 App；**個人字根和設定資料會保留**，也不會移除其他輸入法。完成後請登出再登入。
+
+### 字根資料
+
+沒有字根也能先安裝。日後將自行合法取得的 `liu-uni.tab` 放在：
+
+`~/Library/Application Support/ShamiGo/LicensedTables/liu-uni.tab`
+
+補入後登出再登入，讓蝦米GO重新載入字根資料。
 
 ### macOS 安全性提醒
 
-**目前 GitHub 上的 macOS v0.10.610 使用 ad-hoc 簽章，尚未經 Apple Developer ID 正式簽署與公證。** 如果 macOS 阻擋開啟，請先確認檔案來源，依 [Apple 官方個別允許步驟](https://support.apple.com/zh-tw/102445)操作；不要全面關閉 Gatekeeper。若系統顯示程式損壞或含惡意軟體，請停止安裝。
+**目前 GitHub 上公開的 macOS v0.10.610 使用 ad-hoc 簽章，尚未經 Apple Developer ID 正式簽署與公證。** 透過終端機下載和安裝**不保證避開 Gatekeeper 的安全檢查**。若 macOS 阻擋開啟，請核對來源並依 [Apple 官方個別允許步驟](https://support.apple.com/zh-tw/102445)處理；請勿全面關閉系統防護。若系統顯示 App 已損壞或含惡意軟體，請停止安裝。
 
 ## 功能與相容性
 
