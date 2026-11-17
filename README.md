@@ -38,17 +38,21 @@ shamigo-setup import-data --source /path/to/LicensedTables
 
 ## macOS：Apple Silicon
 
-適用 **macOS 14 或更新版本、Apple Silicon（arm64）**，不支援 Intel Mac。下載 macOS 公開版 ZIP 並完整解壓縮，在「終端機」切換至該資料夾後執行：
+適用 **macOS 14 或更新版本、Apple Silicon（arm64）**，不支援 Intel Mac。下載 **[macOS v0.10.610 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip)** 並完整解壓縮。套件已包含編譯好的 `ShamiGo.app`，**不需要自行編譯，也可以完全使用 Finder 手動安裝，不必執行安裝指令**。
 
-```sh
-/bin/bash Install_ShamiGo_Mac.command
-```
+### 使用 Finder 手動安裝（建議）
 
-此版包含已編譯的 `ShamiGo.app`，**不需要自行編譯**。安裝後請登出並重新登入，再到「系統設定 → 鍵盤 → 文字輸入」加入蝦米GO。
+1. 打開解壓縮後的資料夾，找到 **`ShamiGo.app`**。請保留整個 App，不要進入「顯示套件內容」後單獨複製檔案，也不要放進一般的「應用程式」資料夾。
+2. 在 Finder 按 **Command + Shift + G**（「前往」→「前往資料夾」），輸入 `~/Library/Input Methods/`。如果尚無 `Input Methods` 資料夾，先前往 `~/Library/`，新增一個名稱完全相同的資料夾。
+3. 將整個 **`ShamiGo.app`** 複製到 `~/Library/Input Methods/`，最後應是 `~/Library/Input Methods/ShamiGo.app`。這是目前使用者的安裝位置，不需要管理員權限。若是更新舊版，請先切換至 ABC、結束舊輸入法，再取代原本的 `ShamiGo.app`。
+4. **字根要另外複製，不能放進 `ShamiGo.app`。** 如果有合法取得的 `liu-uni.tab`，在 Finder 使用「前往資料夾」開啟 `~/Library/Application Support/ShamiGo/`，新增 `LicensedTables` 資料夾（若不存在），再把字根複製至 `~/Library/Application Support/ShamiGo/LicensedTables/liu-uni.tab`。若上層 `ShamiGo` 尚不存在，也請自行新增。沒有字根仍可先安裝，但不能使用嘸蝦米中文輸入。**手動安裝不會自動匯入 ZIP 內 `LicensedTables/` 的檔案。**
+5. 從 Apple 選單**登出並重新登入**；若輸入法仍未顯示，可以重新啟動 Mac。前往 **「系統設定」→「鍵盤」→「文字輸入」→「編輯」→「＋」**，尋找並加入 **蝦米GO／ShamiGo**，然後在選單列切換使用。加入後可將蝦米GO排在 ABC 前面。
 
-沒有字根也能先安裝。若要補入合法的 `liu-uni.tab`，可將它放入解壓縮套件的 `LicensedTables/`，再執行 `/bin/bash Install_External_Tables.sh LicensedTables` 匯入，並重新登入。
+### 如果 macOS 阻擋開啟
 
-**注意：macOS 公開版目前使用 ad-hoc 簽章，尚未經 Apple 公證。** 如果遭到 macOS 安全性功能阻擋，請依「系統設定 → 隱私權與安全性」中的個別允許流程處理，勿全面關閉系統保護。
+目前提供的 App 使用 **ad-hoc 本機簽章，尚未經 Apple Developer ID 正式簽署與公證**。手動複製檔案**不會自動解除 Gatekeeper 的安全限制**。若 macOS 提示無法驗證開發者，請先確認 ZIP 來自本專案及校驗碼無誤；如仍決定信任此軟體，可依 [Apple 官方「隱私權與安全性」個別允許程序](https://support.apple.com/zh-tw/102445)操作。只有系統實際顯示「仍要打開」時才能使用該選項；請勿全面關閉 Gatekeeper，若提示程式已損壞或含惡意軟體，請停止安裝。
+
+若複製完成、重新登入後仍找不到蝦米GO，請先核對上述 App 與字根的兩個路徑。**若系統仍拒絕註冊或執行，單純手動複製無法保證成功，可能需等待正式簽章／公證的安裝版本。**
 
 ## 功能與相容性
 
