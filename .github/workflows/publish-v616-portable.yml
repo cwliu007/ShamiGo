@@ -1,0 +1,156 @@
+name: Publish ShamiGo v0.10.616 (verified cross-platform release)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-v616-portable.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  verify_and_publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out existing public ShamiGo binaries
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Cancel queued duplicate macOS publication
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X POST 'repos/cwliu007/ShamiGo/actions/runs/44145982000/cancel' || true
+      - name: Fetch and verify public-only v616 release staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin '+refs/heads/release/v0.10.616-public-stage:refs/remotes/origin/release/v0.10.616-public-stage'
+          python3 - <<'PY'
+          import base64, hashlib, io, os, pathlib, subprocess, tarfile
+          ref='origin/release/v0.10.616-public-stage'
+          expected='b79f9e877408587baa77983930f290997538a45e4d8e9be4330a5efbb5c48362'
+          chunks=[]
+          for i in range(16):
+              b=subprocess.check_output(['git','show',f'{ref}:stage/part{i:02d}.b64'])
+              if len(b)!=(380000 if i<15 else 294564):
+                  raise SystemExit(f'Staging part size mismatch: {i} {len(b)}')
+              chunks.append(b)
+          payload=base64.b64decode(b''.join(chunks),validate=True)
+          actual=hashlib.sha256(payload).hexdigest()
+          if actual!=expected or len(payload)!=4495921:
+              raise SystemExit('Staging archive integrity mismatch: '+actual)
+          destination=pathlib.Path(os.environ['RUNNER_TEMP'])/'ShamiGo_v616_stage'
+          destination.mkdir(parents=True,exist_ok=False)
+          with tarfile.open(fileobj=io.BytesIO(payload),mode='r:gz') as archive:
+              files=archive.getmembers()
+              for entry in files:
+                  path=pathlib.PurePosixPath(entry.name)
+                  if (not entry.isfile() or path.is_absolute() or
+                      any(part in ('.','..') for part in path.parts) or
+                      entry.issym() or entry.islnk() or entry.name.startswith('/')):
+                      raise SystemExit('Untrusted staging path: '+entry.name)
+                  target=destination.joinpath(*path.parts)
+                  target.parent.mkdir(parents=True,exist_ok=True)
+                  with archive.extractfile(entry) as source:
+                      target.write_bytes(source.read())
+                  target.chmod(entry.mode & 0o777)
+          print('Verified staging payload,',len(files),'files')
+          PY
+
+      - name: Reassemble and verify both public release ZIPs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/ShamiGo_v616_stage/assemble.py" \
+            --repo "$GITHUB_WORKSPACE" \
+            --stage "$RUNNER_TEMP/ShamiGo_v616_stage" \
+            --out "$RUNNER_TEMP/ShamiGo_v616_release"
+
+      - name: Confirm preverified macOS signed binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'Native macOS verification already succeeded in run 44145819950, job 134260522168.'
+          echo 'This run uses the exact same verified staging archive SHA-256.'
+          python3 - <<'PY'
+          import hashlib, os, pathlib, plistlib
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])/'ShamiGo_v616_release/macOS_verified'
+          app=root/'ShamiGo.app'
+          binary=app/'Contents/MacOS/ShamiGoIME'
+          assert hashlib.sha256(binary.read_bytes()).hexdigest()=='1a917d0405662ac70759b8a3b3ddfe72bcef9b3204e00d4952fb2707984fd033'
+          info=plistlib.loads((app/'Contents/Info.plist').read_bytes())
+          assert info['CFBundleShortVersionString']=='0.10.616'
+          assert info['CFBundleIdentifier']=='tw.shamigo.inputmethod.macos'
+          for name in ['Install_ShamiGo_Mac.command','Uninstall_ShamiGo_Mac.command','Install_External_Tables.sh']:
+              assert (root/name).is_file()
+          print('Same source-free macOS build as previously native-verified.')
+          PY
+      - name: Publish v0.10.616 release assets and checksums
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: cwliu007/ShamiGo
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/ShamiGo_v616_release"
+          cat > RELEASE_NOTES.md <<'EOF'
+          # 蝦米GO v0.10.616
+
+          - Windows 11 x64: native v0.10.616, install or run from ZIP.
+          - macOS 14+ Apple Silicon arm64: native v0.10.616, precompiled and ad-hoc signed (not Apple-notarized). Terminal install and full uninstall are documented in README.
+          - Linux Debian 13 / LMDE 7 amd64: precompiled addon remains v0.10.366-1 and requires Fcitx5.
+          - GitHub public ZIPs contain no private Boshiamy licensed-root tables or product C++ / Objective-C++ source.
+          - The macOS archive reuses checksum-verified public dictionaries already distributed with Windows/Linux, preserving the signed app's original resource hashes.
+          - Please supply `liu-uni.tab` separately from a licensed source for Chinese input.
+
+          Windows/Linux: `ShamiGo_v0.10.616_Windows_Linux.zip`.
+          macOS arm64: `ShamiGo_v0.10.616_macOS.zip`.
+          SHA-256: `SHA256SUMS.txt`.
+          EOF
+          tag='v0.10.616'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" ShamiGo_v0.10.616_Windows_Linux.zip ShamiGo_v0.10.616_macOS.zip SHA256SUMS.txt --clobber
+            gh release edit "$tag" --notes-file RELEASE_NOTES.md
+          else
+            gh release create "$tag" ShamiGo_v0.10.616_Windows_Linux.zip ShamiGo_v0.10.616_macOS.zip SHA256SUMS.txt \
+              --target "$GITHUB_SHA" \
+              --title 'ShamiGo v0.10.616 — Windows / Linux / macOS' \
+              --notes-file RELEASE_NOTES.md
+          fi
+
+      - name: Update public repository files and README to v0.10.616
+        shell: bash
+        run: |
+          set -euo pipefail
+          release="$RUNNER_TEMP/ShamiGo_v616_release"
+          /usr/bin/rsync -a "$release/public/" "$GITHUB_WORKSPACE/"
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          root=pathlib.Path(os.environ['GITHUB_WORKSPACE'])
+          manifest=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'ShamiGo_v616_stage/manifest.json').read_text())
+          names=sorted(manifest['public'])
+          subprocess.run(['git','add','--',*names],cwd=root,check=True)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --cached --quiet; then
+            echo 'All public repository files already match v616.'
+          else
+            git commit -m 'release: sync v616 Windows and Linux binaries plus macOS release documentation'
+            git push origin HEAD:main
+          fi
+
+      - name: Clean public-only temporary staging branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X DELETE 'repos/cwliu007/ShamiGo/git/refs/heads/release/v0.10.616-public-stage' || true
