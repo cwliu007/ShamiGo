@@ -1,0 +1,50 @@
+name: Publish verified ShamiGo v0.10.607
+on:
+  push:
+    branches:
+      - shamigo-v607-release-staging
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild public archive and verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat release_parts/ShamiGo_v0.10.607_Public.zip.part* > ShamiGo_v0.10.607_Public.zip
+          echo "703aaf4aae85b758cdcf90b5abbfcbb8aa26e6650a5f3f35c4e658291d07aaa6  ShamiGo_v0.10.607_Public.zip" | sha256sum -c -
+          python3 - <<'PY'
+          import zipfile, hashlib, pathlib
+          p=pathlib.Path("ShamiGo_v0.10.607_Public.zip")
+          with zipfile.ZipFile(p) as z:
+              files=z.namelist()
+              assert z.testzip() is None
+              assert len(files)==56, len(files)
+              forbidden={".tab",".cin",".box",".wav",".cpp",".c",".h",".hpp",".mm",".m",".sln",".vcxproj"}
+              assert not any(pathlib.PurePosixPath(x).suffix.lower() in forbidden for x in files)
+              assert not any(x.startswith(("Projects/","Tools/LexiconSources/","GitHub_Release_Staging/")) for x in files)
+              lines=z.read("SHA256SUMS.txt").decode().splitlines()
+              assert len(lines)==len(files)-1
+              for line in lines:
+                  digest,name=line.split("  ",1)
+                  assert hashlib.sha256(z.read(name)).hexdigest()==digest,name
+          print("Public release verified.")
+          PY
+      - name: Publish GitHub release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v0.10.607 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload v0.10.607 ShamiGo_v0.10.607_Public.zip --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create v0.10.607 ShamiGo_v0.10.607_Public.zip \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "ShamiGo v0.10.607 (Windows public binary)" \
+              --notes "Public source-free Windows v0.10.607 package with Linux v0.10.366 prebuilt. Licensed Boshiamy tables are not included. macOS binary is not included. Check README before installation."
+          fi
