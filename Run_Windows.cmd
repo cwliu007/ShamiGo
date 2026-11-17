@@ -29,13 +29,14 @@ set "SHAMIGO_RC=%ERRORLEVEL%"
 if not "%SHAMIGO_RC%"=="0" pause
 exit /b %SHAMIGO_RC%
 ::SHAMIGO_PS_BEGIN
-# ShamiGo v0.10.607 OneFolder FullUninstall (2026-11-17) ZIP bootstrap.
+# ShamiGo v0.10.616 private ZIP bootstrap; Windows executable v0.10.616.
 # SCRIPT_MODE and EDITION are fixed in the launcher's embedded text.
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $mode = 'run'
 $edition = 'public'
-$version = '0.10.607'
+$version = '0.10.616'
+$packageVersion = '0.10.616'
 $stage = $null
 $exitCode = 1
 function Test-Candidate([string]$archivePath,[string]$entryName,[string]$expectedHash) {
@@ -56,7 +57,7 @@ function Test-Candidate([string]$archivePath,[string]$entryName,[string]$expecte
         if ($actual -cne $expectedHash) { return $false }
         $reader = New-Object IO.StreamReader($versionEntry.Open(),[Text.Encoding]::UTF8)
         $metadata = ConvertFrom-Json -InputObject ($reader.ReadToEnd())
-        return ($metadata.package.version -ceq $version -and
+        return ($metadata.package.version -ceq $packageVersion -and
                 $metadata.windows.version -ceq $version)
     } catch { return $false }
     finally {
@@ -128,7 +129,7 @@ function Find-OriginalArchive {
     $ordered = @($candidates | Where-Object { $_.Length -gt 1000000 -and $_.Length -lt 157286400 } |
         Sort-Object -Property @{Expression={
             if ($viewerName.StartsWith($_.Name,[StringComparison]::OrdinalIgnoreCase)) { 3 }
-            elseif ($_.Name -like '*0.10.607*') { 2 }
+            elseif ($_.Name -like '*0.10.616*') { 2 }
             else { 1 }
         };Descending=$true},@{Expression={$_.LastWriteTimeUtc};Descending=$true})
     foreach ($candidate in $ordered) {
@@ -139,7 +140,7 @@ function Find-OriginalArchive {
     Add-Type -AssemblyName System.Windows.Forms
     $picker = New-Object System.Windows.Forms.OpenFileDialog
     try {
-        $picker.Title = 'Choose the full ShamiGo v0.10.607 ZIP archive'
+        $picker.Title = 'Choose the full ShamiGo v0.10.616 ZIP archive'
         $picker.Filter = 'ZIP archives (*.zip)|*.zip'
         $picker.CheckFileExists = $true
         if ($picker.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK -and
@@ -259,7 +260,7 @@ try {
             -ReverseArchive (Join-Path $stage 'Data\EnglishChineseReverse.tar.xz')
         if ($LASTEXITCODE -ne 0) { throw 'ECDICT initialization failed.' }
         $cacheParent = Join-Path $env:LOCALAPPDATA 'ShamiGo\ZipPortable'
-        $cache = Join-Path $cacheParent 'v0.10.607-OneFolder'
+        $cache = Join-Path $cacheParent 'v0.10.616'
         [IO.Directory]::CreateDirectory($cacheParent) | Out-Null
         if (-not [IO.Directory]::Exists($cache)) {
             $partial = Join-Path $cacheParent ('.stage-' + [guid]::NewGuid().ToString('N'))

@@ -1,11 +1,11 @@
 {
   "product": "ShamiGo",
   "windows": {
-    "version": "0.10.607",
+    "version": "0.10.616",
     "architecture": "x64",
     "platform": "Windows 11",
-    "released": "2026-11-17",
-    "display_version": "0.10.607"
+    "released": "2026-11-18",
+    "display_version": "0.10.616"
   },
   "linux": {
     "version": "0.10.366",
@@ -17,16 +17,22 @@
     ],
     "tab_literal_source_version": "0.10.571",
     "native_install_package_version": "0.10.366-14",
-    "native_install_method": "Install bundled Debian 13 / LMDE 7 prebuilt .deb; optional user tables can be imported after installation."
+    "native_install_method": "Build current Fcitx5 addon on Debian 13 / LMDE 7; original v366 .deb retained; updated native package revision 0.10.366-14."
   },
-  "note": "Refactored v607 package using one user-supplied root LicensedTables. Windows native setup helper replaced by rollback-safe file copy. Linux public uses v0.10.366-1 prebuilt.",
+  "macOS": {
+    "version": "0.10.616",
+    "status": "public binary v0.10.616 is included as a separate GitHub Release asset",
+    "architecture": "arm64",
+    "platform": "macOS Apple Silicon (InputMethodKit)",
+    "release_asset": "ShamiGo_v0.10.616_macOS.zip"
+  },
+  "note": "v0.10.616: Mac own-search Shift/root selection, Mac/Win silent search and query clearing, compact font dropdown; Windows executable rebuilt; Linux binary unchanged.",
   "package": {
-    "version": "0.10.607",
-    "released": "2026-11-17",
+    "version": "0.10.616",
+    "released": "2026-11-18",
     "description": "Safe old-version shutdown/clean install; true zero-volume audio resource release; additional bounded dictionary cache and Mac queued-sound invalidation.",
     "layout": "one-user-managed-LicensedTables-at-root",
-    "edition": "v0.10.607-OneFolder-Windows-Linux",
-    "note": "Windows executable and installation scripts are the corrected v607 OneFolder build; Linux uses bundled prebuilt 0.10.366-1.",
-    "public_archive": "ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip"
+    "edition": "Public binaries: Windows v0.10.616; macOS v0.10.616 arm64 (separate ZIP); Linux v0.10.366-1.",
+    "note": "macOS glossary uses native ShamiGo mode hotkeys and root lookup without extra EN/Chinese buttons; Mac/Win glossary searches silent, clear query after search; compact font-size dropdowns"
   }
 }

@@ -1,4 +1,4 @@
-蝦米GO Windows v0.10.607 OneFolder
+蝦米GO Windows v0.10.616
 
 頂層 Install_Windows.cmd：安裝（未提供 liu-uni.tab 仍可安裝）。
 頂層 Run_Windows.cmd：免安裝執行。

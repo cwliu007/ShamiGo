@@ -1,4 +1,4 @@
-# ShamiGo package v0.10.607 - SAC preflight and rollback-aware installation.
+# ShamiGo package v0.10.616 - SAC preflight and rollback-aware installation.
 # Installer launches with one UAC; all subsequent helpers inherit elevation.
 # No Windows service, stored password, background polling, or UAC suppression.
 param(
@@ -59,7 +59,7 @@ function Assert-InstallerAllowedBeforeChanges {
         if (Test-Path -LiteralPath $downloads -PathType Container) {
             $note = Join-Path $downloads 'ShamiGo_Install_SmartAppControl_Block.txt'
             try {
-                @('ShamiGo v0.10.607 installation preflight',
+                @('ShamiGo v0.10.616 installation preflight',
                   ('Detected: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')),
                   ('Smart App Control: ' + $state),
                   ('Unsigned or untrusted components: ' + ($blockedComponents -join ', ')),
@@ -428,7 +428,7 @@ try {
         # gracefully closes every verified same-user ShamiGo before deleting.
         # Never refuse removal merely because ShamiGo is running.
         Assert-InstallerAllowedBeforeChanges
-        Say ('ShamiGo package v0.10.607: ' + $Mode + ' (native setup component v0.10.607)')
+        Say ('ShamiGo package v0.10.616: ' + $Mode + ' (native setup component v0.10.616)')
         Say 'Requesting Windows administrator approval (one UAC prompt)...'
         $psExe = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
         $argText = '-NoLogo -NoProfile -ExecutionPolicy Bypass -File "{0}" -Elevated -ExpectedSid "{1}" -Mode {2} -RunId {3}' -f $PSCommandPath,$sid,$Mode,$RunId
@@ -533,7 +533,7 @@ try {
             Fail 'PACKAGE_VERSION.txt missing: extract the complete v607 release.'
         }
         if ((Get-Content -LiteralPath $packageMarker -Encoding ASCII -TotalCount 1).Trim() -cne
-            'ShamiGo package v0.10.607') { Fail 'Package/installer version mismatch.' }
+            'ShamiGo package v0.10.616') { Fail 'Package/installer version mismatch.' }
         $version = (Get-Content -LiteralPath $versionFile -Encoding ASCII -TotalCount 1).Trim()
         $match = [regex]::Match($version, '^ShamiGo v(0\.[0-9]+\.[0-9]+)$')
         if (-not $match.Success) { Fail 'VERSION.txt contains an invalid version.' }

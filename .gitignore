@@ -1,22 +1,12 @@
-# Never publish personal licensed table files or project sources.
-/Projects/
-/Tools/
+# PRIVATE PACKAGE: never stage the full source-and-dictionary ZIP.
+# Only the curated GitHub_Release_Staging/ docs are eligible by default.
+/*
+!/.gitignore
+!/GitHub_Release_Staging/
+!/GitHub_Release_Staging/**
+
+# Unified user-managed tables and public-export output.
+/LicensedTables/*
+!/LicensedTables/README.txt
 /GitHub_Public_Export/
-/GitHub_Release_Staging/
-**/LicensedTables/*.tab
-**/LicensedTables/*.cin
-**/*.tab
-**/*.cin
-**/*.box
-**/Private_Builds/
-**/*.pdb
-**/*.obj
-**/*.o
-**/*.log
-**/__pycache__/
-*.tmp
-*.bak
-*.old
-ShamiGo_v*.zip
-.DS_Store
-Thumbs.db
+/ShamiGo_v0.10.607_OneFolder_GitHub_Ready/

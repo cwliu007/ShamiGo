@@ -1,147 +1,123 @@
 # 蝦米GO（ShamiGo）
 
-**蝦米GO是嘸蝦米輸入法的免安裝外殼，並非嘸蝦米官方產品。** Windows 版使用 C++／Win32，macOS 版使用 Apple InputMethodKit，Linux 版使用 Fcitx5。軟體由作者規畫、設計與修改，並使用 AI 工具協助開發。
+**蝦米GO 是嘸蝦米輸入法的輸入輔助外殼，並非嘸蝦米官方產品。** Windows、macOS、Linux 均提供可安裝的公開版。軟體由作者規畫、設計與修改，並使用 AI 工具協助開發。
 
 <img width="754" height="138" alt="蝦米GO Windows 操作畫面" src="https://github.com/user-attachments/assets/1f0cbc51-3e99-4f0d-a3ee-1948f947e821" />
 
 ## 下載
 
-- **[Windows／Linux 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-onefolder/ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip)**
-- **[macOS Apple Silicon v0.10.610 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip)**
+- **[Windows／Linux v0.10.616 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.616/ShamiGo_v0.10.616_Windows_Linux.zip)**
+- **[macOS Apple Silicon v0.10.616 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.616/ShamiGo_v0.10.616_macOS.zip)**
+- [下載檔案 SHA-256](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.616/SHA256SUMS.txt)
 
-嘸蝦米字根須自行合法取得，可參考[嘸蝦米官方網站](https://boshiamy.com/)；公開版不包含私人字根或開發原始碼。**即使尚無字根，也可以先安裝；之後補入 `liu-uni.tab` 並重新啟動即可使用中文輸入。**
+公開版**不包含私人嘸蝦米字根或產品原始碼**。請自行合法取得所需的 `liu-uni.tab`，可參考[嘸蝦米官方網站](https://boshiamy.com/)。沒有字根仍可先安裝，之後再補入並重新啟動即可使用中文輸入。
 
 ## Windows：免安裝與安裝
 
-1. 可以直接在 Windows 檔案總管開啟下載的 ZIP，雙擊其中的 **`Install_Windows.cmd`** 安裝，不必先手動解壓縮。
-2. 若要免安裝使用，執行 **`Run_Windows.cmd`**；它也支援從 ZIP 內直接啟動。免安裝版不會自行設定登入啟動。
-3. 字根統一放在 `LicensedTables/`。完整解壓縮後，可將合法取得的 `liu-uni.tab` 放進套件根目錄的此資料夾；若已安裝，也可以執行 **`Open_LicensedTables.cmd`**，將字根放進開啟的使用者資料夾。補入後完整關閉並重新啟動蝦米GO，不必重新安裝。
-4. 如需完整解除安裝，執行 **`Uninstall_Windows.cmd`**。它會先關閉正在執行的蝦米GO，再移除自動啟動、已安裝檔案、設定及快取；不會刪除原始下載 ZIP。
+**Windows 11 x64，程式版本 v0.10.616。** 在檔案總管中開啟 ZIP，可直接雙擊 `Install_Windows.cmd` 安裝，或 `Run_Windows.cmd` 免安裝使用；也可以先完整解壓縮再執行。
 
-沒有字根時仍可安裝並使用英文模式。其他操作說明請參閱 ZIP 中的 `LicensedTables/README.txt` 與 `Packages/Windows/ShamiGo/ShamiGo_Help.html`。
+- `Install_Windows.cmd`：安裝、設定登入時啟動。
+- `Run_Windows.cmd`：免安裝使用，不設定開機啟動。
+- `Open_LicensedTables.cmd`：開啟使用者字根資料夾，放入合法的 `liu-uni.tab` 後重新啟動蝦米GO即可，不必重裝。
+- `Uninstall_Windows.cmd`：關閉蝦米GO並完整移除目前使用者的已安裝檔案、設定、快取及字根副本；保留原始下載 ZIP。
 
 ## Linux：Debian 13／LMDE 7
 
-適用 64 位元（amd64），需搭配 Fcitx5。完整解壓縮後，在根目錄執行：
+需要 amd64 與 Fcitx5。完整解壓縮後執行：
 
 ```sh
 sh Install_Linux.sh
 ```
 
-安裝使用套件內的預編譯 `.deb`，不需要自行編譯。日後如需匯入合法字根，將 `liu-uni.tab` 放在套件根目錄的 `LicensedTables/`，執行：
+如需匯入字根，將合法 `liu-uni.tab` 放入根目錄的 `LicensedTables/`，再執行：
 
 ```sh
-shamigo-setup import-data --source /path/to/LicensedTables
+shamigo-setup import-data --source /你的實際路徑/LicensedTables
 ```
 
-將路徑改為實際字根資料夾，再於 Fcitx5 設定中加入蝦米GO。解除安裝執行 `sh Uninstall_Linux.sh`。若在 Windows 使用 VirtualBox，可使用 `Install_Linux_VM_from_Windows.cmd` 輔助安裝。
+在 Fcitx5 設定中加入蝦米GO；解除安裝執行 `sh Uninstall_Linux.sh`。**此 ZIP 的 Linux 預編譯套件仍為 v0.10.366-1**，不是重新編譯的 v616 Linux 程式。
 
 ## macOS：Apple Silicon
 
-適用 **macOS 14 以上、Apple Silicon（arm64）**，不支援 Intel Mac。公開 ZIP 內已有編譯完成的 `ShamiGo.app`，不需要自行編譯。
+適用 Apple Silicon（arm64），macOS 14 或更新版本。已包含編譯好的 v0.10.616 `ShamiGo.app`，**不必自行編譯，也不必手動解壓縮**。
 
-### 安裝：終端機下載 ZIP，並保留在「下載項目」
+### 終端機自動下載並安裝
 
-在 Mac 打開「終端機」（Terminal），**複製以下整段指令貼上執行**：
+開啟「終端機」（Terminal），完整複製以下指令貼上執行。ZIP 會保留在「下載項目」，方便以後解除安裝：
 
 ```bash
 (
   set -euo pipefail
-  ZIP="$HOME/Downloads/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
-  URL="https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
+  BASE='https://github.com/cwliu007/ShamiGo/releases/download/v0.10.616'
+  ZIP="$HOME/Downloads/ShamiGo_v0.10.616_macOS.zip"
+  SUM="$HOME/Downloads/ShamiGo_v0.10.616_SHA256SUMS.txt"
   mkdir -p "$HOME/Downloads"
-  if [[ ! -f "$ZIP" ]]; then
-    curl -fL --retry 3 -o "$ZIP" "$URL"
-  fi
-  printf '%s  %s\n' '57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3' "$ZIP" | shasum -a 256 -c -
+  curl -fL --retry 3 -o "$ZIP" "$BASE/ShamiGo_v0.10.616_macOS.zip"
+  curl -fL --retry 3 -o "$SUM" "$BASE/SHA256SUMS.txt"
+  (cd "$HOME/Downloads"; grep ' ShamiGo_v0.10.616_macOS.zip$' "$SUM" | shasum -a 256 -c -)
   DIR="$(mktemp -d -t shamigo-install)"
   trap 'rm -rf "$DIR"' EXIT
   ditto -x -k "$ZIP" "$DIR"
   /bin/bash "$DIR/Install_ShamiGo_Mac.command"
-  echo "完成：安裝 ZIP 已保留在 $ZIP"
 )
 ```
 
-安裝後從 Apple 選單**登出再登入**，到「系統設定 → 鍵盤 → 文字輸入 → 編輯」加入 **蝦米GO／ShamiGo**。**不要使用 `sudo`**。
+安裝完成後，請**登出再登入**，至「系統設定 → 鍵盤 → 文字輸入 → 編輯」加入蝦米GO。
 
-### 字根資料夾：一鍵用 Finder 開啟
+### 一鍵開啟字根資料夾
 
-macOS 的 `~/Library` 預設隱藏。要找到自己的字根資料夾，只需在「終端機」執行：
+請在終端機執行下列指令；會自動建立並以 Finder 開啟資料夾，再將自行合法取得的 `liu-uni.tab` 拖入：
 
 ```bash
-mkdir -p "$HOME/Library/Application Support/ShamiGo/LicensedTables"
-open "$HOME/Library/Application Support/ShamiGo/LicensedTables"
+mkdir -p "$HOME/Library/Application Support/ShamiGo/LicensedTables" && open "$HOME/Library/Application Support/ShamiGo/LicensedTables"
 ```
 
-Finder 會直接開啟該資料夾。將自己合法取得的 `liu-uni.tab` 放進去，登出再登入即可載入中文輸入；沒有字根也能先安裝。也可在 Finder 按 **Command + Shift + G**，輸入 `~/Library/Application Support/ShamiGo/LicensedTables`。
+補入字根後請完整結束輸入法並重新登入，使字根載入生效。
 
-### 完整解除安裝：先用 Downloads 的 ZIP，找不到才下載
+### 終端機完整解除安裝
 
-**注意：以下操作會永久刪除目前使用者的蝦米GO程式、私人字根、英文字典、設定與快取，無法還原。請先自行備份需要留下的資料。** 解除安裝不影響 ABC 或其他輸入法。
-
-在「終端機」複製執行：
+直接執行下列指令，**優先使用下載項目內原本的 ZIP**；找不到時才重新下載。此操作將**永久刪除**目前使用者的 ShamiGo App、合法字根副本、設定、字典與快取，並在成功後移除已下載的公開 ZIP。請先備份自己需要的資料。
 
 ```bash
 (
   set -euo pipefail
-  ZIP="$HOME/Downloads/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
-  URL="https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
-  if [[ ! -f "$ZIP" ]]; then
-    echo '下載項目找不到安裝 ZIP，正在重新下載……'
-    mkdir -p "$HOME/Downloads"
-    curl -fL --retry 3 -o "$ZIP" "$URL"
+  BASE='https://github.com/cwliu007/ShamiGo/releases/download/v0.10.616'
+  ZIP="$HOME/Downloads/ShamiGo_v0.10.616_macOS.zip"
+  SUM="$HOME/Downloads/ShamiGo_v0.10.616_SHA256SUMS.txt"
+  printf '確定永久刪除蝦米GO及所有使用者字根和設定？輸入 YES 繼續：'
+  read -r CONFIRM
+  [ "$CONFIRM" = 'YES' ] || { echo '已取消'; exit 1; }
+  if [ ! -f "$ZIP" ]; then
+    curl -fL --retry 3 -o "$ZIP" "$BASE/ShamiGo_v0.10.616_macOS.zip"
   fi
-  printf '%s  %s\n' '57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3' "$ZIP" | shasum -a 256 -c -
-  printf '%s' '確定永久刪除蝦米GO及所有字根、設定？輸入 YES：'
-  IFS= read -r ANSWER
-  [[ "$ANSWER" == YES ]] || { echo '已取消'; exit 1; }
+  curl -fL --retry 3 -o "$SUM" "$BASE/SHA256SUMS.txt"
+  (cd "$HOME/Downloads"; grep ' ShamiGo_v0.10.616_macOS.zip$' "$SUM" | shasum -a 256 -c -)
   DIR="$(mktemp -d -t shamigo-uninstall)"
   trap 'rm -rf "$DIR"' EXIT
   ditto -x -k "$ZIP" "$DIR"
   /bin/bash "$DIR/Uninstall_ShamiGo_Mac.command"
-  launchctl bootout "gui/$(id -u)/tw.shamigo.inputmethod.switcher" >/dev/null 2>&1 || true
-  defaults delete tw.shamigo.inputmethod.macos >/dev/null 2>&1 || true
-  defaults delete tw.shamigo.inputmethod.mac >/dev/null 2>&1 || true
-  for PATH_TO_REMOVE in \
-    "$HOME/Library/Application Support/ShamiGo" \
-    "$HOME/Library/Caches/ShamiGo" \
-    "$HOME/Library/Logs/ShamiGo" \
-    "$HOME/Library/LaunchAgents/tw.shamigo.inputmethod.switcher.plist" \
-    "$HOME/Library/Preferences/tw.shamigo.inputmethod.macos.plist" \
-    "$HOME/Library/Preferences/tw.shamigo.inputmethod.mac.plist" \
-    "$HOME/Library/Saved Application State/tw.shamigo.inputmethod.macos.savedState"; do
-    [[ ! -L "$PATH_TO_REMOVE" ]] || { echo "發現連結，已停止清除：$PATH_TO_REMOVE"; exit 1; }
-    rm -rf -- "$PATH_TO_REMOVE"
-  done
-  rm -f -- "$ZIP"
-  echo '蝦米GO程式、字根、設定與安裝 ZIP 已移除。請登出再登入。'
+  rm -f -- "$ZIP" "$SUM"
 )
 ```
 
-若曾由管理員在 `/Library/Input Methods/ShamiGo.app` 安裝系統共用版本，上述**目前使用者**的解除安裝不會動到該全系統檔案；請另外由管理員處理。
+完成後登出再登入；不會移除 ABC 或其他輸入法。解除安裝僅處理**目前使用者**的安裝位置，不會以管理員權限清除其他帳號或系統共用 App。
 
-### macOS 安全性
-
-目前公開的 v0.10.610 使用 ad-hoc 簽章，未經 Apple Developer ID 簽署與 Apple 公證。終端機下載**不代表可以繞過 Gatekeeper**；若系統阻擋，請依 [Apple 官方個別允許步驟](https://support.apple.com/zh-tw/102445)操作，不要全面關閉 macOS 安全防護。
+**macOS 安全性提醒：** 此版本使用 ad-hoc 簽章，尚未經 Apple Developer ID 正式簽署與公證；終端機安裝不保證避開 Gatekeeper。如遭阻擋，請依 [Apple 官方個別允許方式](https://support.apple.com/zh-tw/102445)操作，不要關閉 macOS 的安全保護。
 
 ## 功能與相容性
 
-Windows 版提供繁簡中文嘸蝦米輸入、英文拼字檢查與建議、候選字選取、快碼提示、注音與拼音輔助、日文模式、自訂字碼、快捷鍵切換，以及支援深淺主題的稻穗浮動框。另有英文詞義泡泡框、英漢及漢英搜尋、查字歷史、字級調整與可調音量的打字聲（預設靜音）。部分功能需要使用者自行提供合法字根。
-
-蝦米GO不是 Windows 原生 TSF 輸入法，部分密碼欄位、系統管理員視窗或特殊文字框可能無法正常使用。macOS 與 Linux 版的功能及快捷鍵不一定與 Windows 完全一致。
+Windows 版提供繁簡中文輸入、英文拼字檢查與建議、快碼提示、注音／拼音輔助、日文模式、快捷鍵切換、稻穗候選框、查字泡泡框，以及可調整的打字聲。新版 Windows 與 macOS 改善英文搜尋視窗的捲軸、靜音搜尋及搜尋後清空輸入框。不同平台的細部功能可能尚未完全相同。
 
 ## 目前版本
 
-| 平台 | 版本 |
+| 平台 | 實際程式版本 |
 | --- | --- |
-| Windows 11（64 位元） | v0.10.607 |
-| Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
-| macOS 14+（Apple Silicon arm64） | v0.10.610 |
+| Windows 11（x64） | v0.10.616 |
+| macOS 14+（Apple Silicon arm64） | v0.10.616 |
+| Debian 13／LMDE 7（amd64） | v0.10.366-1（預編譯套件） |
 
-目前三平台的**實際執行檔版本尚未相同**。這裡列出的是真實建置版本；必須重新編譯並發佈 Windows、Linux，才能將三者真正統一到同一版本。不能只修改 README 或檔名。
+本次統一發行版號為 **v0.10.616**；Linux 保留原有預編譯檔的真實版號。
 
 ## 安全與授權
 
-輸入輔助程式需要處理按鍵事件，可能觸發防毒軟體偵測。請以 [Windows／Linux SHA-256](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-onefolder/RELEASE_SHA256SUMS.txt) 或 [macOS SHA-256](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_macOS_SHA256SUMS.txt) 核對下載檔，勿為了安裝任意關閉系統安全防護。本公開版不包含私人字根、ICQ 原音效或開發原始碼。
-
-蝦米GO採**免費使用、保留著作權**方式提供。使用前請閱讀 [授權條款](LICENSE.md)及[第三方資料來源聲明](THIRD_PARTY_NOTICES.md)。
+輸入輔助程式可能因處理鍵盤事件而觸發安全軟體偵測；請核對發行檔 SHA-256，勿任意停用系統保護。蝦米GO**免費使用、保留著作權**；請參閱 [授權條款](LICENSE.md)與[第三方資料來源聲明](THIRD_PARTY_NOTICES.md)。

@@ -1,4 +1,4 @@
-# ShamiGo v0.10.607 OneFolder: optional user-supplied dictionary importer.
+# ShamiGo v0.10.616: optional user-supplied dictionary importer.
 # No administrator rights needed. Absence of liu-uni.tab is an allowed state.
 param([string]$ReleaseRoot = '')
 $ErrorActionPreference = 'Stop'
