@@ -21,7 +21,7 @@ set "SHAMIGO_RESULT=%ERRORLEVEL%"
 if not "%SHAMIGO_RESULT%"=="0" pause
 exit /b %SHAMIGO_RESULT%
 ::SHAMIGO_PS_BEGIN
-# ShamiGo v0.10.607: public ZIP/Explorer batch bootstrap.
+# ShamiGo v0.10.607 public packaging patch 1: ZIP/Explorer bootstrap.
 # No executable, dictionary, Chinese index or licensed table is embedded here.
 # Windows Explorer may stage only one .cmd from an opened ZIP. This script
 # locates the ORIGINAL complete ZIP, verifies it, extracts to a unique TEMP
@@ -49,7 +49,7 @@ function Test-ShamiGoZipCandidate([string]$path, [string]$cmdName, [string]$cmdD
         $zip = [IO.Compression.ZipFile]::OpenRead($path)
         $scriptEntry = $zip.GetEntry($cmdName)
         $versionEntry = $zip.GetEntry('VERSION.json')
-        $manifestEntry = $zip.GetEntry('SHA256SUMS.txt')
+        $manifestEntry = $zip.GetEntry('FILE_SHA256SUMS.txt')
         if ($null -eq $scriptEntry -or $null -eq $versionEntry -or
             $null -eq $manifestEntry) { return $false }
         if ($scriptEntry.Length -gt 50000 -or $scriptEntry.Length -lt 1000 -or
@@ -188,7 +188,7 @@ function Test-ZipEntries([IO.Compression.ZipArchive]$archive) {
             throw 'Unexpected ZIP expansion size.'
         }
     }
-    foreach ($required in @('SHA256SUMS.txt','VERSION.json',
+    foreach ($required in @('FILE_SHA256SUMS.txt','VERSION.json',
         'Packages/Windows/ShamiGo/ShamiGo.exe',
         'Packages/Windows/ShamiGo/ShamiGo_AdminSetup.exe',
         'Packages/Windows/ShamiGo/Tools/Configure_ShamiGo_AutoStart.ps1',
@@ -208,7 +208,7 @@ function Assert-ReleaseIntegrity([string]$root, $entries) {
     if ($v.package.version -cne $version -or $v.windows.version -cne $version) {
         throw 'Unexpected ShamiGo package version.'
     }
-    $manifestPath = Join-Path $root 'SHA256SUMS.txt'
+    $manifestPath = Join-Path $root 'FILE_SHA256SUMS.txt'
     $verified = @{}
     foreach ($line in [IO.File]::ReadAllLines($manifestPath)) {
         if ($line -cnotmatch '^([0-9a-f]{64})  ([A-Za-z0-9_./ -]+)$') {
@@ -217,7 +217,7 @@ function Assert-ReleaseIntegrity([string]$root, $entries) {
         $digest = $Matches[1]; $name = $Matches[2]
         $key = $name.ToLowerInvariant()
         if (-not $entries.ContainsKey($key) -or $verified.ContainsKey($key) -or
-            $name -ceq 'SHA256SUMS.txt') {
+            $name -ceq 'FILE_SHA256SUMS.txt') {
             throw ('Unexpected manifest path: ' + $name)
         }
         $verified[$key] = $true
@@ -258,7 +258,7 @@ try {
     $zip = [IO.Compression.ZipFile]::OpenRead($source)
     try { $entries = Test-ZipEntries $zip }
     finally { $zip.Dispose() }
-    $stage = Join-Path ([IO.Path]::GetTempPath()) ('ShamiGo-v601-' + [guid]::NewGuid().ToString('N'))
+    $stage = Join-Path ([IO.Path]::GetTempPath()) ('ShamiGo-v607p1-' + [guid]::NewGuid().ToString('N'))
     [IO.Directory]::CreateDirectory($stage) | Out-Null
     [IO.Compression.ZipFile]::ExtractToDirectory($source,$stage)
     Assert-ReleaseIntegrity $stage $entries
@@ -266,9 +266,8 @@ try {
     $app = Join-Path $release 'ShamiGo.exe'
     $config = Join-Path $release 'Tools\Configure_ShamiGo_AutoStart.ps1'
     if ($mode -in @('install','run')) {
-        $personal = Join-Path $stage 'Tools\Prepare_Windows_Data.ps1'
-        & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $personal -ReleaseRoot $stage
-        if ($LASTEXITCODE -ne 0) { throw 'Original Windows personal data preparation failed.' }
+        # Public distribution has no private preparation tool or licensed tables.
+        # Users add their own tables to the extracted package before installation.
         Install-GlossaryAssets $stage
     }
     if ($mode -in @('install','uninstall')) {
