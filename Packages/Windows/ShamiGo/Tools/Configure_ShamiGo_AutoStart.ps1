@@ -44,7 +44,7 @@ function Assert-InstallerAllowedBeforeChanges {
     $release = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
     # Both the setup helper AND the main program must pass Windows policy.
     $blockedComponents = New-Object 'System.Collections.Generic.List[string]'
-    foreach ($name in @('ShamiGo_AdminSetup.exe','ShamiGo.exe','ShamiGo_AdminLauncher.exe')) {
+    foreach ($name in @('ShamiGo.exe','ShamiGo_AdminLauncher.exe')) {
         $binary = Join-Path $release $name
         if (-not (Test-Path -LiteralPath $binary -PathType Leaf)) {
             Fail ('Required component is missing: ' + $binary)
@@ -290,6 +290,23 @@ function Restore-PreviousPreferences([string]$backup,[string]$destination) {
             Say ('Restored user preference file: ' + $name)
         }
     }
+    # Keep separately licensed user dictionaries during a clean reinstall.
+    # Files provided with this release take precedence; old supplementary
+    # tables, phonetic data and custom phrases are copied only when absent.
+    foreach ($folderName in @('LicensedTables','Phonetics','Phrases')) {
+        $oldFolder = Join-Path $backup $folderName
+        if (-not (Test-Path -LiteralPath $oldFolder -PathType Container)) { continue }
+        $newFolder = Join-Path $destination $folderName
+        [IO.Directory]::CreateDirectory($newFolder) | Out-Null
+        foreach ($oldFile in @(Get-ChildItem -LiteralPath $oldFolder -File -Recurse -Force -ErrorAction Stop)) {
+            $relative = $oldFile.FullName.Substring($oldFolder.Length).TrimStart([char]'\\')
+            $newFile = Join-Path $newFolder $relative
+            if (Test-Path -LiteralPath $newFile) { continue }
+            [IO.Directory]::CreateDirectory((Split-Path -Parent $newFile)) | Out-Null
+            Copy-Item -LiteralPath $oldFile.FullName -Destination $newFile -ErrorAction Stop
+        }
+        Say ('Restored missing private data from previous installation: ' + $folderName)
+    }
 }
 # Windows Task Scheduler may serialize a valid task with a quoted executable,
 # an expandable environment variable, or an NT account name instead of a SID.
@@ -531,8 +548,7 @@ try {
         $match = [regex]::Match($version, '^ShamiGo v(0\.[0-9]+\.[0-9]+)$')
         if (-not $match.Success) { Fail 'VERSION.txt contains an invalid version.' }
         $portableExe = Join-Path $releaseDir 'ShamiGo.exe'
-        $setupExe = Join-Path $releaseDir 'ShamiGo_AdminSetup.exe'
-        foreach ($file in @($portableExe,$setupExe)) {
+        foreach ($file in @($portableExe)) {
             if (-not (Test-Path -LiteralPath $file -PathType Leaf)) { Fail ('Missing component: ' + $file) }
         }
         # Repeat after elevation: policies and files can change during UAC.
@@ -574,25 +590,18 @@ try {
         }
         # The previous task was stopped before process termination; old
         # binaries remain in the rollback folder until success is verified.
-        Say '[4/5] Installing a clean protected copy (maximum 60 seconds)...' 
-        # IMPORTANT: do not use Start-Process -Wait. It waits for all descendants,
-        # including processes that might stay alive. Wait for this exact helper PID.
-        # A user can reopen ShamiGo during the UAC/setup transition. Make
-        # one controlled second attempt only after re-verifying ownership and
-        # waiting for the previous runtime to exit. Never delete unknown PIDs.
-        Stop-ExistingShamiGo $sid
-        $p = Start-Process -FilePath $setupExe -ArgumentList '--setup-only' `
-            -WorkingDirectory $releaseDir -PassThru -ErrorAction Stop
-        $code = Wait-Child $p 60 'Native ShamiGo installer'
-        if ($code -ne 0) {
-            Say ('Native setup returned {0}; checking for a re-opened old ShamiGo before one retry.' -f $code)
-            Stop-ExistingShamiGo $sid
-            Start-Sleep -Milliseconds 350
-            $p = Start-Process -FilePath $setupExe -ArgumentList '--setup-only' `
-                -WorkingDirectory $releaseDir -PassThru -ErrorAction Stop
-            $code = Wait-Child $p 60 'Native ShamiGo installer (retry)'
+        Say '[4/5] Installing a clean protected copy without the old native setup launcher...'
+        # The v607 native setup helper can report Windows error 2 even when
+        # ShamiGo.exe is present. Install files directly from this VERIFIED
+        # release path instead; scheduled-task registration is handled below.
+        # The old protected directory is held in rollbackDir until success.
+        Assert-NoLinks $releaseDir
+        [IO.Directory]::CreateDirectory($installDir) | Out-Null
+        foreach ($entry in @(Get-ChildItem -LiteralPath $releaseDir -Force -ErrorAction Stop)) {
+            $to = Join-Path $installDir $entry.Name
+            Copy-Item -LiteralPath $entry.FullName -Destination $to -Force -Recurse -ErrorAction Stop
         }
-        if ($code -ne 0) { Fail ('Native installer returned exit code {0} after stopping old ShamiGo and retrying. The previous installation is retained for rollback. Please provide the SetupLogs entry and any Windows error.' -f $code) }
+        Say 'Copied the release into the protected per-user installation directory.'
         if (-not (Test-Path -LiteralPath $installedExe -PathType Leaf)) { Fail 'Protected ShamiGo.exe is missing after setup.' }
         $portableHash = (Get-FileHash -LiteralPath $portableExe -Algorithm SHA256).Hash
         if ((Get-FileHash -LiteralPath $installedExe -Algorithm SHA256).Hash -ne $portableHash) {
