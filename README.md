@@ -1,8 +1,8 @@
-# 蝦米GO（ShamiGo） · v0.10.607 OneFolder 修訂版
+# 蝦米GO（ShamiGo）
 
 蝦米GO 是嘸蝦米輸入法的輸入輔助外殼，並非嘸蝦米官方產品。軟體作者使用 AI 工具協助開發，請自行合法取得所需字根。
 
-**下載：** [Windows／Linux 公開版 v0.10.607 OneFolder](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-onefolder/ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip)
+**下載：** [Windows／Linux v0.10.607 OneFolder](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-onefolder/ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip) ｜ [macOS Apple Silicon v0.10.610](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip)
 
 ## 唯一的字根資料夾
 
@@ -30,8 +30,16 @@
 
 在解壓縮後的根目錄執行 `sh Install_Linux.sh`，安裝套件內預編譯的 v0.10.366-1 `.deb`。即使尚無字根也可以安裝；日後將 `liu-uni.tab` 放入根目錄 `LicensedTables/`，執行 `shamigo-setup import-data --source /你的實際路徑/LicensedTables`，然後重新啟動 Fcitx5。
 
+## macOS：Apple Silicon（arm64）
+
+下載 [macOS v0.10.610 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/tag/v0.10.610-macos)，完整解壓縮後，在「終端機」切換到該資料夾，執行 `/bin/bash Install_ShamiGo_Mac.command`。不支援 Intel Mac；最低需求為 macOS 14。
+
+沒有字根也能安裝，但需自行合法取得 `liu-uni.tab` 才能使用嘸蝦米中文輸入。可在安裝前放入套件的 `LicensedTables/`；安裝後新增時，可執行 `/bin/bash Install_External_Tables.sh LicensedTables` 匯入，並登出再登入。
+
+**此版為 ad-hoc 簽章、尚未 Apple 公證。** 首次使用若遭 Gatekeeper 阻擋，請使用「系統設定 → 隱私權與安全性」提供的個別允許方式，不要全面關閉系統安全功能。這是已編譯的安裝包，不需要在使用者電腦重新編譯。
+
 ## 發行與授權
 
-Windows 原生程式版本 0.10.607；Linux 預編譯套件 0.10.366-1。本公開版只提供 Windows 與 Linux。此為 **v607 的 OneFolder 安裝相容性修訂**，不是換成 v608。完整私人 ZIP 保留來源與私人合法字根；公開版不含它們。
+Windows 原生程式版本 0.10.607；Linux 預編譯套件 0.10.366-1。Windows／Linux 公開版與 macOS 公開版分別提供下載。此為 **v607 的 OneFolder 安裝相容性修訂**，不是換成 v608。完整私人 ZIP 保留來源與私人合法字根；公開版不含它們。
 
 授權與第三方來源請參閱 `LICENSE.md`、`THIRD_PARTY_NOTICES.md` 與平台內的 Help。
