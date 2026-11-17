@@ -1,46 +1,22 @@
-# Personal source projects and author-only audit/build tools stay out of GitHub.
+# Never publish personal licensed table files or project sources.
 /Projects/
 /Tools/
-/Check_Project.cmd
-/Check_Project.sh
-/Check_Linux.sh
-/Verify_Package.py
-# Never publish personally licensed Boshiamy dictionaries or phrase tables.
+/GitHub_Public_Export/
+/GitHub_Release_Staging/
 **/LicensedTables/*.tab
 **/LicensedTables/*.cin
-**/liu-uni*.tab
-**/liuphon.tab
-**/liuext.tab
-**/AssociatedPhrases.cin
-**/liu.box
-**/liu.cin
-# Build intermediates and personal files.
-**/History/
-**/Logs/
-**/SetupLogs/
-**/UninstallBackups/
-**/out/
-**/build-output/
-**/Build/
-**/build/
-**/CMakeFiles/
-**/CMakeCache.txt
-**/Testing/
+**/*.tab
+**/*.cin
+**/*.box
+**/Private_Builds/
 **/*.pdb
 **/*.obj
 **/*.o
 **/*.log
+**/__pycache__/
 *.tmp
 *.bak
 *.old
-*~
-**/__pycache__/
-**/*.pyc
+ShamiGo_v*.zip
 .DS_Store
 Thumbs.db
-
-# Safety net: unknown dictionary/table names and accidental full ZIP exports.
-**/*.tab
-**/*.cin
-**/*.box
-ShamiGo_v*.zip

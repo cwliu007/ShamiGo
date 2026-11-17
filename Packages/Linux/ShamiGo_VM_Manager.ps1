@@ -343,11 +343,12 @@ function Invoke-ShamiGoAction {
             $sha = (Get-FileHash -LiteralPath $payload -Algorithm SHA256).Hash.ToLowerInvariant()
             if ($sha -ne $expectedPackageHash) { throw 'VM payload changed during installation.' }
             Copy-GuestFile -Source $payload -Name 'ShamiGo_VM_Payload.tar.gz'
-            # The only user-owned dictionary source is the Linux-only LicensedTables
+            # The one user-owned dictionary source is the root LicensedTables
             # folder. A lone CMD launched from Explorer's ZIP viewer cannot
             # access those files; in that case the guest may import later.
-            $userTables = Join-Path $base 'LicensedTables'
-            $dataNames = @('liu-uni.tab','liu-uni2.tab','liu-uni4.tab')
+            $userTables = [IO.Path]::GetFullPath((Join-Path $base '..\..\LicensedTables'))
+            $dataNames = @('liu-uni.tab','liu-uni2.tab','liu-uni3.tab',
+                'liu-uni4.tab','liuphon.tab','liuext.tab','AssociatedPhrases.cin')
             if (Test-Path -LiteralPath $userTables -PathType Container) {
                 foreach ($name in $dataNames) {
                     $file = Join-Path $userTables $name
@@ -360,7 +361,7 @@ function Invoke-ShamiGoAction {
                     Copy-GuestFile -Source $file -Name $name
                 }
             } else {
-                Write-Host '未找到 Packages/Linux/LicensedTables；VM 安裝後可在 Linux 匯入私人字根。'
+                Write-Host '未找到 ZIP 最外層 LicensedTables；VM 安裝後可在 Linux 匯入私人字根。'
             }
         }
         Copy-GuestFile -Source $passwordFile -Name 'shamigo-credential.tmp'

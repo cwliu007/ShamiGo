@@ -1,4 +1,4 @@
-﻿# ShamiGo ECDICT offline asset bootstrap.  Windows 11 tar.exe handles XZ.
+# ShamiGo ECDICT offline asset bootstrap.  Windows 11 tar.exe handles XZ.
 # No downloads, Python, registry writes or elevation.  Reuses a verified
 # user-local, memory-mappable TSV on every subsequent launch.
 param([Parameter(Mandatory=$true)][string]$Archive,
@@ -43,9 +43,9 @@ try {
         }
         Write-Host '[ECDICT] Offline English/Chinese dictionary installed (770,611 entries).'
     }
-    # Optional licensed usage corpus. The public ZIP does not distribute it.
-    if ($UsageArchive -and [IO.File]::Exists($UsageArchive)) {
     # Supplemental, SHA-pinned real examples and WordNet lexical relations.
+    # This corpus is private/optional. ECDICT and the reverse index always work without it.
+    if ($UsageArchive -and [IO.File]::Exists($UsageArchive)) {
     # Keep these separate: ECDICT remains the ONLY definition dictionary.
     $usageTarget = Join-Path $folder 'EnglishUsage.tsv'
     if (-not [IO.File]::Exists($UsageArchive) -or

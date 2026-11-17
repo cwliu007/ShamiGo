@@ -42,7 +42,7 @@ function Assert-InstallerAllowedBeforeChanges {
     if ($Mode -ne 'Install') { return }
     $state = Get-SmartAppControlState
     $release = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
-    # Both the setup helper AND the main program must pass Windows policy.
+    # Verify only the executable components used by the installer.
     $blockedComponents = New-Object 'System.Collections.Generic.List[string]'
     foreach ($name in @('ShamiGo.exe','ShamiGo_AdminLauncher.exe')) {
         $binary = Join-Path $release $name
@@ -94,16 +94,6 @@ function Assert-NoLinks([string]$path) {
                 $stack.Push($child.FullName)
             }
         }
-    }
-}
-function Assert-ClosedForUninstall([string]$userSid) {
-    if ($Mode -ne 'Uninstall') { return }
-    $protectedExe = Join-Path (Join-Path (Join-Path $env:ProgramFiles 'ShamiGo') $userSid) 'ShamiGo.exe'
-    $active = @(Get-Process -Name ShamiGo -ErrorAction SilentlyContinue | Where-Object {
-        try { [string]$_.Path -ieq $protectedExe } catch { $false }
-    })
-    if ($active.Count -gt 0) {
-        Fail 'ShamiGo is still running. Please exit ShamiGo from the system tray, then run Uninstall_Windows.cmd again. No files or scheduled tasks were changed.'
     }
 }
 # Terminate only an identified ShamiGo runtime of the user that is installing.
@@ -285,27 +275,26 @@ function Restore-PreviousPreferences([string]$backup,[string]$destination) {
     foreach ($name in @('ShamiGoCPP.ini','ShamiGo.ini','RemoteViewers.txt','liu.box')) {
         $from = Join-Path $backup $name
         if (Test-Path -LiteralPath $from -PathType Leaf) {
+            if ($name -eq 'liu.box' -and (Test-Path -LiteralPath (Join-Path $destination $name) -PathType Leaf)) { continue }
             Copy-Item -LiteralPath $from -Destination (Join-Path $destination $name) `
                 -Force -ErrorAction Stop
             Say ('Restored user preference file: ' + $name)
         }
     }
-    # Keep separately licensed user dictionaries during a clean reinstall.
-    # Files provided with this release take precedence; old supplementary
-    # tables, phonetic data and custom phrases are copied only when absent.
     foreach ($folderName in @('LicensedTables','Phonetics','Phrases')) {
         $oldFolder = Join-Path $backup $folderName
         if (-not (Test-Path -LiteralPath $oldFolder -PathType Container)) { continue }
         $newFolder = Join-Path $destination $folderName
         [IO.Directory]::CreateDirectory($newFolder) | Out-Null
         foreach ($oldFile in @(Get-ChildItem -LiteralPath $oldFolder -File -Recurse -Force -ErrorAction Stop)) {
-            $relative = $oldFile.FullName.Substring($oldFolder.Length).TrimStart([char]'\\')
+            # Use substring after the separator; no [char]'\\' conversion.
+            $relative = $oldFile.FullName.Substring($oldFolder.Length + 1)
             $newFile = Join-Path $newFolder $relative
-            if (Test-Path -LiteralPath $newFile) { continue }
-            [IO.Directory]::CreateDirectory((Split-Path -Parent $newFile)) | Out-Null
+            if ([IO.File]::Exists($newFile)) { continue }
+            [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($newFile)) | Out-Null
             Copy-Item -LiteralPath $oldFile.FullName -Destination $newFile -ErrorAction Stop
         }
-        Say ('Restored missing private data from previous installation: ' + $folderName)
+        Say ('Preserved missing previous-user files in: ' + $folderName)
     }
 }
 # Windows Task Scheduler may serialize a valid task with a quoted executable,
@@ -435,16 +424,17 @@ try {
     }
 
     if (-not $Elevated) {
-        # Avoid a partial uninstall: an active protected EXE would otherwise
-        # block file deletion after the auto-start task has already been removed.
-        Assert-ClosedForUninstall $sid
+        # The elevated Uninstall action removes our autostart task and then
+        # gracefully closes every verified same-user ShamiGo before deleting.
+        # Never refuse removal merely because ShamiGo is running.
         Assert-InstallerAllowedBeforeChanges
         Say ('ShamiGo package v0.10.607: ' + $Mode + ' (native setup component v0.10.607)')
         Say 'Requesting Windows administrator approval (one UAC prompt)...'
         $psExe = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
         $argText = '-NoLogo -NoProfile -ExecutionPolicy Bypass -File "{0}" -Elevated -ExpectedSid "{1}" -Mode {2} -RunId {3}' -f $PSCommandPath,$sid,$Mode,$RunId
         $p = Start-Process -FilePath $psExe -ArgumentList $argText -Verb RunAs -PassThru -ErrorAction Stop
-        $exitCode = Wait-Child $p 130 'Administrator configuration'
+        $adminWaitSeconds = if ($Mode -eq 'Uninstall') { 360 } else { 130 }
+        $exitCode = Wait-Child $p $adminWaitSeconds 'Administrator configuration'
         if ($exitCode -ne 0) {
             $reported = Join-Path $env:LOCALAPPDATA ('ShamiGo\SetupLogs\setup_{0}_{1}.log' -f $Mode,$RunId)
             if (Test-Path -LiteralPath $reported -PathType Leaf) {
@@ -540,7 +530,7 @@ try {
         if (-not (Test-Path -LiteralPath $versionFile -PathType Leaf)) { Fail 'VERSION.txt missing: extract the complete ZIP first.' }
         $packageMarker = Join-Path $releaseDir 'PACKAGE_VERSION.txt'
         if (-not (Test-Path -LiteralPath $packageMarker -PathType Leaf)) {
-            Fail 'PACKAGE_VERSION.txt missing: extract the complete v604 release.'
+            Fail 'PACKAGE_VERSION.txt missing: extract the complete v607 release.'
         }
         if ((Get-Content -LiteralPath $packageMarker -Encoding ASCII -TotalCount 1).Trim() -cne
             'ShamiGo package v0.10.607') { Fail 'Package/installer version mismatch.' }
@@ -590,18 +580,23 @@ try {
         }
         # The previous task was stopped before process termination; old
         # binaries remain in the rollback folder until success is verified.
-        Say '[4/5] Installing a clean protected copy without the old native setup launcher...'
-        # The v607 native setup helper can report Windows error 2 even when
-        # ShamiGo.exe is present. Install files directly from this VERIFIED
-        # release path instead; scheduled-task registration is handled below.
-        # The old protected directory is held in rollbackDir until success.
+        Say '[4/5] Installing a clean protected copy from the extracted release...'
+        # Avoid ShamiGo_AdminSetup.exe --setup-only (Windows error 2 on v607).
+        # Source binaries are already verified by the caller; the old directory
+        # remains available for rollback until the new task is registered.
+        # An unlicensed public package may start in English-only mode.
+        # Import_LicensedTables.ps1 creates TableSourcePath.txt before UAC,
+        # allowing the installed runtime to load tables added after setup.
+        if (-not (Test-Path -LiteralPath (Join-Path $releaseDir 'TableSourcePath.txt') -PathType Leaf)) {
+            Fail 'Table source configuration is missing; use Install_Windows.cmd.'
+        }
         Assert-NoLinks $releaseDir
         [IO.Directory]::CreateDirectory($installDir) | Out-Null
         foreach ($entry in @(Get-ChildItem -LiteralPath $releaseDir -Force -ErrorAction Stop)) {
-            $to = Join-Path $installDir $entry.Name
-            Copy-Item -LiteralPath $entry.FullName -Destination $to -Force -Recurse -ErrorAction Stop
+            Copy-Item -LiteralPath $entry.FullName -Destination (Join-Path $installDir $entry.Name) `
+                -Force -Recurse -ErrorAction Stop
         }
-        Say 'Copied the release into the protected per-user installation directory.'
+        Say 'Protected files copied successfully without native setup helper.'
         if (-not (Test-Path -LiteralPath $installedExe -PathType Leaf)) { Fail 'Protected ShamiGo.exe is missing after setup.' }
         $portableHash = (Get-FileHash -LiteralPath $portableExe -Algorithm SHA256).Hash
         if ((Get-FileHash -LiteralPath $installedExe -Algorithm SHA256).Hash -ne $portableHash) {
@@ -622,70 +617,128 @@ try {
                 Say ('WARNING: installation succeeded, but old rollback directory was retained: ' + $script:rollbackDir)
             }
         }
-        Say 'SUCCESS: ShamiGo is installed. Elevated auto-start begins at the next Windows sign-in.' 
+        try {
+            Start-ScheduledTask -TaskName $taskName -TaskPath $taskPath -ErrorAction Stop
+            Say 'Started the installed ShamiGo task for this Windows session.'
+        } catch {
+            Say ('WARN: installed successfully but auto-start now failed: ' + $_.Exception.Message)
+        }
+        Say 'SUCCESS: ShamiGo installed; elevated auto-start is registered for future sign-ins.'
         Say 'Normal sign-ins do not require another UAC prompt.'
         exit 0
     }
 
-    # Recheck after elevation: the process may have started during the UAC prompt.
-    Assert-ClosedForUninstall $sid
-    Say '[1/2] Removing the ShamiGo auto-start task...'
-    Run-TaskWorker 'RemoveTask'
     if ($Mode -eq 'Disable') {
+        Say 'Removing the current-user ShamiGo auto-start task...'
+        Run-TaskWorker 'RemoveTask'
         Say 'SUCCESS: auto-start disabled. ShamiGo program and user data remain installed.'
         exit 0
     }
 
-    Say '[2/2] Removing protected ShamiGo installation...'
-    if (-not (Test-Path -LiteralPath $installDir)) {
-        Say 'SUCCESS: no protected installation found. Portable files and personal data were not deleted.'
-        exit 0
+    # Full uninstall is intentionally different from reinstall: NONE of the
+    # installed preferences, licensed-table COPIES, cache or backups are kept.
+    # It must never remove the downloaded ZIP, the extracted release source,
+    # other Windows users' installations, or unrelated Program Files entries.
+    if ($Mode -ne 'Uninstall') { Fail 'Unexpected administrator operation.' }
+    Say '[1/4] Checking complete-uninstall scope and disabling automatic restart...'
+    $localBase = [Environment]::GetFolderPath('LocalApplicationData')
+    $roamingBase = [Environment]::GetFolderPath('ApplicationData')
+    if ([string]::IsNullOrWhiteSpace($localBase) -or
+        [string]::IsNullOrWhiteSpace($roamingBase)) {
+        Fail 'Cannot locate the current user application-data folders safely.'
     }
-    # Confirm this exact user's protected directory before deleting anything.
-    if ((Split-Path -Leaf $installDir) -ne $sid -or
-        (Split-Path -Leaf (Split-Path -Parent $installDir)) -ne 'ShamiGo') {
-        Fail 'Unexpected installation directory: refusing removal.'
+    $localOwned = Join-Path $localBase 'ShamiGo'
+    $roamingOwned = Join-Path $roamingBase 'ShamiGo'
+    $programBase = [IO.Path]::GetFullPath($env:ProgramFiles)
+    $installedExpected = Join-Path (Join-Path $programBase 'ShamiGo') $sid
+    if ([IO.Path]::GetFullPath($installDir) -ine
+        [IO.Path]::GetFullPath($installedExpected)) {
+        Fail 'The protected install path is outside the current user ShamiGo scope.'
     }
-    Assert-NoLinks $installDir
-    $running = @(Get-Process -Name ShamiGo -ErrorAction SilentlyContinue | Where-Object {
-        try { $_.Path -ieq $installedExe } catch { $false }
-    })
-    if ($running.Count -gt 0) { Fail 'ShamiGo is still running. Exit it from the tray and run uninstall again.' }
-    # Keep all non-EXE user data in a persistent per-user backup before removing.
-    $backupBase = Join-Path $env:LOCALAPPDATA 'ShamiGo\UninstallBackups'
-    if (-not (Test-Path -LiteralPath $backupBase -PathType Container)) {
-        New-Item -ItemType Directory -Path $backupBase -Force -ErrorAction Stop | Out-Null
+    if ([IO.Path]::GetFileName($localOwned) -cne 'ShamiGo' -or
+        [IO.Path]::GetFileName($roamingOwned) -cne 'ShamiGo') {
+        Fail 'Application data path scope validation failed.'
     }
-    $backupDir = Join-Path $backupBase ('backup_{0}_{1}' -f (Get-Date -Format 'yyyyMMdd_HHmmss'),[guid]::NewGuid().ToString('N').Substring(0,8))
-    New-Item -ItemType Directory -Path $backupDir -ErrorAction Stop | Out-Null
-    $keepNames = @('ShamiGo.ini','ShamiGoCPP.ini','RemoteViewers.txt','liu.box',
-                   'LicensedTables','Phonetics','Phrases')
-    $saved = 0
-    foreach ($name in $keepNames) {
-        $source = Join-Path $installDir $name
-        if (Test-Path -LiteralPath $source) {
-            Copy-Item -LiteralPath $source -Destination (Join-Path $backupDir $name) -Recurse -Force -ErrorAction Stop
-            $saved++
+    if (Test-Path -LiteralPath $installRoot -PathType Container) {
+        $rootInfo = Get-Item -LiteralPath $installRoot -Force -ErrorAction Stop
+        if (($rootInfo.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            Fail 'Protected program root is a symlink or junction; refusing deletion.'
         }
     }
-    # Any unfamiliar file/directory is treated as user data, not as junk.
-    $owned = @('ShamiGo.exe','ShamiGo.installing.tmp','ShamiGo.previous.tmp',
-               'VERSION.txt','RELEASE_NOTES.txt','ShamiGo_Help.html','History') + $keepNames
-    foreach ($item in @(Get-ChildItem -LiteralPath $installDir -Force -ErrorAction Stop)) {
-        if ($owned -notcontains $item.Name) {
-            Copy-Item -LiteralPath $item.FullName -Destination (Join-Path $backupDir $item.Name) -Recurse -Force -ErrorAction Stop
-            $saved++
+    if (Test-Path -LiteralPath $installDir) { Assert-NoLinks $installDir }
+    if (Test-Path -LiteralPath $localOwned) { Assert-NoLinks $localOwned }
+    if (Test-Path -LiteralPath $roamingOwned) { Assert-NoLinks $roamingOwned }
+    # Leftover same-account rollback folders are previous INSTALL artifacts,
+    # not personal project folders. Never touch other users' SID directories.
+    $rollbackPattern = '^' + [regex]::Escape($sid) + '[.]rollback[.][a-f0-9]{32}$'
+    $staleRollbacks = @()
+    if (Test-Path -LiteralPath $installRoot -PathType Container) {
+        $staleRollbacks = @(Get-ChildItem -LiteralPath $installRoot -Directory -Force -ErrorAction Stop |
+            Where-Object { $_.Name -match $rollbackPattern })
+        foreach ($entry in $staleRollbacks) { Assert-NoLinks $entry.FullName }
+    }
+    # A task may start a new instance while an old one closes. Remove the
+    # verified task first, then close only processes owned by THIS user's SID.
+    Run-TaskWorker 'RemoveTask'
+    Say '[2/4] Closing running ShamiGo instances (including portable instances)...'
+    Stop-ExistingShamiGo $sid
+    Stop-ExistingShamiGo $sid
+    if (@(Get-OldShamiGoRuntimes $sid).Count -ne 0) {
+        Fail 'ShamiGo remained active: no installed files were deleted.'
+    }
+
+    Say '[3/4] Deleting the current-user protected install and program data...'
+    # Recheck after stopping: another process could have changed the folders.
+    if (Test-Path -LiteralPath $installDir) {
+        Assert-NoLinks $installDir
+        Remove-Item -LiteralPath $installDir -Recurse -Force -ErrorAction Stop
+    }
+    foreach ($entry in $staleRollbacks) {
+        if (Test-Path -LiteralPath $entry.FullName) {
+            Assert-NoLinks $entry.FullName
+            Remove-Item -LiteralPath $entry.FullName -Recurse -Force -ErrorAction Stop
         }
     }
-    # Never delete any installed data if a backup copy failed.
-    Say ('Preserved {0} user-data groups in: {1}' -f $saved,$backupDir)
-    Remove-Item -LiteralPath $installDir -Force -Recurse -ErrorAction Stop
-    if ((Test-Path -LiteralPath $installRoot -PathType Container) -and
-        @((Get-ChildItem -LiteralPath $installRoot -Force -ErrorAction Stop)).Count -eq 0) {
-        Remove-Item -LiteralPath $installRoot -Force -ErrorAction Stop
+    if (Test-Path -LiteralPath $installRoot -PathType Container) {
+        if (@(Get-ChildItem -LiteralPath $installRoot -Force -ErrorAction Stop).Count -eq 0) {
+            Remove-Item -LiteralPath $installRoot -Force -ErrorAction Stop
+        }
     }
-    Say 'SUCCESS: removed protected ShamiGo and its scheduled task.'
-    Say 'Your portable ZIP folder is untouched. Saved user files remain in the backup folder above.'
+    # LocalAppData\ShamiGo owns Dictionaries, LicensedTables copies, ZipPortable
+    # cache, SetupLogs, previous InstallBackups and UninstallBackups. Keep
+    # none after full uninstall. Do not re-create a log in the removed folder.
+    if (Test-Path -LiteralPath $localOwned) {
+        Assert-NoLinks $localOwned
+        $script:logPath = $null
+        Remove-Item -LiteralPath $localOwned -Recurse -Force -ErrorAction Stop
+    }
+    # Older releases may also have written ShamiGo-specific roaming settings.
+    if (Test-Path -LiteralPath $roamingOwned) {
+        Assert-NoLinks $roamingOwned
+        Remove-Item -LiteralPath $roamingOwned -Recurse -Force -ErrorAction Stop
+    }
+
+    Say '[4/4] Verifying no current-user ShamiGo installation remains...'
+    Import-Module ScheduledTasks -ErrorAction Stop
+    if ($null -ne (Get-ScheduledTask -TaskName $taskName -TaskPath $taskPath -ErrorAction SilentlyContinue)) {
+        Fail 'ShamiGo scheduled task still exists; uninstall is incomplete.'
+    }
+    if ((Test-Path -LiteralPath $installDir) -or
+        (Test-Path -LiteralPath $localOwned) -or
+        (Test-Path -LiteralPath $roamingOwned)) {
+        Fail 'ShamiGo installation or application-data directory still exists.'
+    }
+    if (Test-Path -LiteralPath $installRoot -PathType Container) {
+        if (@(Get-ChildItem -LiteralPath $installRoot -Directory -Force -ErrorAction Stop |
+            Where-Object { $_.Name -match $rollbackPattern }).Count -gt 0) {
+            Fail 'An old same-user ShamiGo rollback folder remains.'
+        }
+    }
+    if (@(Get-OldShamiGoRuntimes $sid).Count -ne 0) {
+        Fail 'A ShamiGo process started again during uninstall.'
+    }
+    Say 'SUCCESS: all current-user installed ShamiGo files, settings, dictionaries, cache, backups and auto-start task were removed.'
+    Say 'The original ZIP or manually extracted release directory was not changed.'
     exit 0
  } catch {
     $failureReason = $_.Exception.Message
@@ -728,6 +781,15 @@ try {
     }
     $message = 'ERROR: ' + $failureReason
     Say $message
-    if ($script:logPath) { Say ('Diagnostic log: ' + $script:logPath) }
+    if ($script:logPath) {
+        Say ('Diagnostic log: ' + $script:logPath)
+        try {
+            $downloads = Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Downloads'
+            if ([IO.Directory]::Exists($downloads)) {
+                Copy-Item -LiteralPath $script:logPath -Destination (Join-Path $downloads 'ShamiGo_Install_Last_Error.log') -Force -ErrorAction Stop
+                Say ('A copy of the failure log was saved to Downloads.')
+            }
+        } catch { Say ('Could not copy the optional Downloads log: ' + $_.Exception.Message) }
+    }
     exit 1
 }

@@ -89,29 +89,7 @@
 <li>「查字」可反查字碼、同音字及相關候選，查詢不會自動取代原文件文字。</li>
 </ul>
 <h2>五、字根與個人資料</h2>
-<p>三個系統各自使用獨立的 <code>LicensedTables</code> 資料夾，請放入合法取得且符合程式要求的字根檔：</p>
-<table>
-<thead>
-<tr>
-  <th>系統</th>
-  <th>ZIP 內放置位置</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td>Windows</td>
-  <td><code>Packages/Windows/ShamiGo/LicensedTables/</code></td>
-</tr>
-<tr>
-  <td>macOS</td>
-  <td><code>Packages/macOS/LicensedTables/</code></td>
-</tr>
-<tr>
-  <td>Linux</td>
-  <td><code>Packages/Linux/LicensedTables/</code></td>
-</tr>
-</tbody>
-</table>
+<p>三個平台共用 ZIP 最外層唯一的使用者字根來源 <code>LicensedTables/</code>。只需放入合法的 <code>liu-uni.tab</code>，其他資料選用。Windows 可直接在 ZIP 內執行 Install_Windows.cmd；未提供字根仍可安裝，日後補入再重新啟動。</p>
 <p>Mac 安裝時會把字根放到 <code>~/Library/Application Support/ShamiGo/LicensedTables/</code>，<strong>不放入已簽署的 App</strong>。安裝完成後的私人離線安裝包在 <code>Packages/macOS/Private_Builds/</code>，其中 App 與字根資料夾分開。修改字根後，請完整結束並重新啟動輸入法。自訂詞組可使用 <code>liu.box</code>，請自行備份。</p>
 <h2>六、第三方資料與權利</h2>
 <p>蝦米GO可能讀取使用者自行提供的字根，以及其他第三方字音或詞組資料；各資料權利與授權條件分別適用。<strong>私人 ZIP 及內嵌字根的安裝負載不可直接公開上傳或散布</strong>。詳細資訊請參閱 <code>LICENSE.md</code> 與 <code>THIRD_PARTY_NOTICES.md</code>。</p>

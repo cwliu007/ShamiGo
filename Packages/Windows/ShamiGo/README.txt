@@ -1,9 +1,8 @@
-蝦米GO Windows 使用說明
+蝦米GO Windows v0.10.607 OneFolder
 
-免安裝：Run_Windows.cmd
-安裝：Install_Windows.cmd
-解除安裝：Uninstall_Windows.cmd
-
-請將有合法使用權且格式相容的字根放入 LicensedTables 資料夾。
-完整操作說明：ShamiGo_Help.html
-狀態框、模式切換提示預設 1 秒；選字後結果提示預設 2.5 秒。
+頂層 Install_Windows.cmd：安裝（未提供 liu-uni.tab 仍可安裝）。
+頂層 Run_Windows.cmd：免安裝執行。
+頂層 Uninstall_Windows.cmd：自動關閉執行中的蝦米GO，完整移除目前使用者的安裝檔、設定、字根副本、快取及自動啟動工作。
+頂層 Open_LicensedTables.cmd：打開供事後補字根的資料夾。
+頂層 LicensedTables/ 是唯一需要由使用者管理的字根來源。
+字根加入後，退出並重開蝦米GO即可，無須重裝。

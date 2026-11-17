@@ -44,6 +44,9 @@ if [ ! -f "$PREFLIGHT" ] || [ -L "$PREFLIGHT" ]; then
   echo 'ERROR: missing package manager preflight.' >&2; exit 2
 fi
 if [ "$ACTION" = install ]; then
+  RELEASE_ROOT=$(CDPATH= cd -- "$HERE/../.." && pwd -P)
+  USER_TABLES="$RELEASE_ROOT/LicensedTables"
+  # The public package installs even if no licensed personal table exists yet.
   # Reject damaged or wrong-architecture packages before requesting sudo.
   [ -f "$DEB" ] && [ ! -L "$DEB" ] || { echo 'ERROR: .deb missing. Extract the whole ZIP first.' >&2; exit 2; }
   [ "$(dpkg-deb -f "$DEB" Package)" = shamigo-fcitx5 ] || exit 2
@@ -70,16 +73,19 @@ if [ "$ACTION" = remove ]; then
   echo 'Removal finished. ~/.local/share/fcitx5/shamigo and personal config remain unchanged.'
   exit 0
 fi
-printf '%s\n' '[3/5] Installing verified prebuilt Linux v0.10.366 package (no source build)...'
+# The public GitHub ZIP has no C++ project sources. Install the checked
+# prebuilt Linux v0.10.366-1 package directly, without trying to compile.
+printf '%s\n' '[2/5] Installing the verified Debian 13 / LMDE 7 binary...'
 sudo /usr/bin/env DEBIAN_FRONTEND=noninteractive /usr/bin/apt-get --no-remove install -y "$DEB"
-command -v shamigo-setup >/dev/null 2>&1 || { echo 'ERROR: setup tool not found.' >&2; exit 1; }
+command -v shamigo-setup >/dev/null 2>&1 || { echo 'ERROR: setup tool not found after installation.' >&2; exit 1; }
 printf '%s\n' '[5/7] Importing personal Liu dictionaries if provided (never overwrite)...'
 # The only user-supplied table folder in the extracted release.
-USER_TABLES="$HERE/LicensedTables"
-if [ -f "$USER_TABLES/liu-uni.tab" ] && [ ! -L "$USER_TABLES/liu-uni.tab" ]; then
+RELEASE_ROOT=$(CDPATH= cd -- "$HERE/../.." && pwd -P)
+USER_TABLES="$RELEASE_ROOT/LicensedTables"
+if [ -s "$USER_TABLES/liu-uni.tab" ] && [ ! -L "$USER_TABLES/liu-uni.tab" ]; then
   shamigo-setup import-data --source "$USER_TABLES"
 else
-  echo 'No personal Liu tables found in Packages/Linux/LicensedTables; existing personal files are preserved.'
+  echo 'No main table in root LicensedTables; existing personal files are preserved.'
 fi
 printf '%s\n' '[6/7] Linking Fcitx5 Eng / ShamiGo 嘸 labels (per-user)...'
 shamigo-link-fcitx-labels install
@@ -89,7 +95,7 @@ if [ ! -f "$USER_TABLES/liu-uni.tab" ] &&
    [ ! -f "${XDG_DATA_HOME:-$HOME/.local/share}/fcitx5/shamigo/liu-uni.tab" ]; then
   echo 'PACKAGE INSTALLED: no personal Liu dictionary is available yet.'
   echo 'Import a properly licensed table with:'
-  echo '  shamigo-setup import-data --source /path/to/ShamiGo/Packages/Linux/LicensedTables'
+  echo '  shamigo-setup import-data --source /path/to/ShamiGo/LicensedTables'
   echo 'Then check the installation with: shamigo-setup check --strict'
 elif ! shamigo-setup check --strict; then
   echo 'Program package installed, but readiness is incomplete. Check personal dictionary and fcitx5 packages.' >&2

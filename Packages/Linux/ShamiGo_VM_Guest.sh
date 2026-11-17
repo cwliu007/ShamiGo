@@ -62,7 +62,7 @@ try:
         members = tar.getmembers()
         names = [m.name for m in members]
         # Program-only archive. Private tables are accepted exclusively from
-        # participant-supplied Packages/Linux/LicensedTables, transferred separately.
+        # participant-supplied root LicensedTables, transferred separately.
         if (f'{base}/{deb}' not in names or not set(names).issubset(allowed)
                 or len(names) != len(set(names))):
             raise ValueError('Unexpected, duplicated, or missing archive member')
