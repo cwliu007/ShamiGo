@@ -1,0 +1,150 @@
+name: Publish ShamiGo v0.10.607 OneFolder Windows and Linux
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-v607-onefolder.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out public repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Fetch verified temporary release payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin +refs/heads/release/v0.10.607-onefolder-stage:refs/remotes/origin/release/v0.10.607-onefolder-stage
+
+      - name: Synchronize and verify source-free public files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, io, os, pathlib, re, subprocess, tarfile, zipfile
+          root = pathlib.Path.cwd()
+          branch = 'origin/release/v0.10.607-onefolder-stage'
+          chunks = []
+          for i in range(12):
+              key = f'.github/release-payload/part{i:02d}.b64'
+              chunks.append(subprocess.check_output(['git', 'show', f'{branch}:{key}']))
+          encoded = b''.join(chunks)
+          if len(encoded) != 1755864 or not re.fullmatch(rb'[A-Za-z0-9+/]+={0,2}', encoded):
+              raise SystemExit('Release transport invalid')
+          overlay = base64.b64decode(encoded, validate=True)
+          if hashlib.sha256(overlay).hexdigest() != '34bb9d417970e157021f2b0b12984eb7700a2792a741a02192100fc3c89a4dce':
+              raise SystemExit('Release payload SHA-256 mismatch')
+          with tarfile.open(fileobj=io.BytesIO(overlay), mode='r:gz') as archive:
+              members = archive.getmembers()
+              if len(members) != 46:
+                  raise SystemExit('Unexpected number of release overlay entries')
+              for member in members:
+                  name = member.name
+                  pp = pathlib.PurePosixPath(name)
+                  if (not member.isfile() or name.startswith('/') or '\\' in name
+                          or any(p in ('', '..', '.') for p in pp.parts) or name.startswith('.github/')
+                          or re.search(r'(?i)\.(tab|cin|box|cpp|c|mm|hpp|h)$', name)):
+                      raise SystemExit('Forbidden public package member: ' + name)
+                  dest = root / pathlib.Path(*pp.parts)
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  with archive.extractfile(member) as src:
+                      dest.write_bytes(src.read())
+          manifest = root / 'SHA256SUMS.txt'
+          if hashlib.sha256(manifest.read_bytes()).hexdigest() != '82ea2e837e26600257366f8750fbca145caf91376d63e643f7f64d3e0940e426':
+              raise SystemExit('Manifest integrity mismatch')
+          allowed = {'SHA256SUMS.txt'}
+          for line in manifest.read_text(encoding='ascii').splitlines():
+              if not re.fullmatch(r'[0-9a-f]{64}  [A-Za-z0-9_./ -]+', line):
+                  raise SystemExit('Invalid manifest entry')
+              digest, name = line.split('  ', 1)
+              if name in allowed or name.startswith(('.github/', 'Projects/', 'Tools/')):
+                  raise SystemExit('Disallowed or repeated path: ' + name)
+              if re.search(r'(?i)\.(tab|cin|box|cpp|c|mm|hpp|h)$', name):
+                  raise SystemExit('Personal dictionary/source file detected: ' + name)
+              path = root / name
+              if not path.is_file() or path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                  raise SystemExit('Required release file missing or corrupted: ' + name)
+              allowed.add(name)
+          if len(allowed) != 53:
+              raise SystemExit('Unexpected public release file count')
+          for raw in subprocess.check_output(['git', 'ls-files', '-z']).split(b'\0'):
+              if not raw:
+                  continue
+              name = raw.decode('utf-8')
+              if name not in allowed and name != '.github/workflows/publish-v607-onefolder.yml':
+                  path = root / name
+                  if path.exists() or path.is_symlink():
+                      path.unlink()
+          print('Verified 53 release files; removed obsolete tracked paths; no private dictionary or product source')
+          PY
+
+      - name: Commit verified Windows and Linux files to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'release: publish verified v607 OneFolder Windows and Linux binaries and installers'
+            git push origin HEAD:main
+          fi
+
+      - name: Create audited release ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, pathlib, zipfile
+          root = pathlib.Path.cwd()
+          names = ['SHA256SUMS.txt']
+          for line in (root / 'SHA256SUMS.txt').read_text(encoding='ascii').splitlines():
+              names.append(line.split('  ', 1)[1])
+          if len(names) != 53:
+              raise SystemExit('Unexpected release count')
+          output = root / 'ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip'
+          with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+              for name in sorted(names):
+                  z.write(root / name, arcname=name)
+          with zipfile.ZipFile(output) as z:
+              if z.testzip() is not None or len(z.namelist()) != 53:
+                  raise SystemExit('Invalid distribution ZIP')
+              for line in z.read('SHA256SUMS.txt').decode('ascii').splitlines():
+                  digest, name = line.split('  ', 1)
+                  if hashlib.sha256(z.read(name)).hexdigest() != digest:
+                      raise SystemExit('Bad SHA256: ' + name)
+          digest = hashlib.sha256(output.read_bytes()).hexdigest()
+          (root / 'RELEASE_SHA256SUMS.txt').write_text(digest + '  ' + output.name + '\n', encoding='ascii')
+          print('Release verified:', output.name, output.stat().st_size, digest)
+          PY
+
+      - name: Publish GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag='v0.10.607-onefolder'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip RELEASE_SHA256SUMS.txt --clobber
+          else
+            gh release create "$tag" ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip RELEASE_SHA256SUMS.txt \
+              --target "$(git rev-parse HEAD)" \
+              --title 'ShamiGo v0.10.607 OneFolder – Windows / Linux' \
+              --notes 'Public binary release for Windows 11 x64 and Linux Debian 13 / LMDE 7 amd64. One top-level LicensedTables folder, no bundled Boshiamy dictionaries or application source code. Windows installs without a table and can load the legally supplied liu-uni.tab after restarting. Linux uses the included precompiled .deb. The Windows CMD can launch from within ZIP using Explorer. Static/archive checks passed; platform runtime validation remains recommended.'
+          fi
+
+      - name: Remove temporary transport branch after successful release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/release/v0.10.607-onefolder-stage" || true
