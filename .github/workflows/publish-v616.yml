@@ -89,6 +89,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: cwliu007/ShamiGo
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP/ShamiGo_v616_release"
