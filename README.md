@@ -38,21 +38,44 @@ shamigo-setup import-data --source /path/to/LicensedTables
 
 ## macOS：Apple Silicon
 
-適用 **macOS 14 或更新版本、Apple Silicon（arm64）**，不支援 Intel Mac。下載 **[macOS v0.10.610 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip)** 並完整解壓縮。套件已包含編譯好的 `ShamiGo.app`，**不需要自行編譯，也可以完全使用 Finder 手動安裝，不必執行安裝指令**。
+適用 **macOS 14 或更新版本、Apple Silicon（arm64）**，不支援 Intel Mac。公開版已包含編譯完成的 `ShamiGo.app`，使用者**不需要自行編譯，也不必手動搬移 App**。
 
-### 使用 Finder 手動安裝（建議）
+### 複製指令到終端機，自動下載並安裝（建議）
 
-1. 打開解壓縮後的資料夾，找到 **`ShamiGo.app`**。請保留整個 App，不要進入「顯示套件內容」後單獨複製檔案，也不要放進一般的「應用程式」資料夾。
-2. 在 Finder 按 **Command + Shift + G**（「前往」→「前往資料夾」），輸入 `~/Library/Input Methods/`。如果尚無 `Input Methods` 資料夾，先前往 `~/Library/`，新增一個名稱完全相同的資料夾。
-3. 將整個 **`ShamiGo.app`** 複製到 `~/Library/Input Methods/`，最後應是 `~/Library/Input Methods/ShamiGo.app`。這是目前使用者的安裝位置，不需要管理員權限。若是更新舊版，請先切換至 ABC、結束舊輸入法，再取代原本的 `ShamiGo.app`。
-4. **字根要另外複製，不能放進 `ShamiGo.app`。** 如果有合法取得的 `liu-uni.tab`，在 Finder 使用「前往資料夾」開啟 `~/Library/Application Support/ShamiGo/`，新增 `LicensedTables` 資料夾（若不存在），再把字根複製至 `~/Library/Application Support/ShamiGo/LicensedTables/liu-uni.tab`。若上層 `ShamiGo` 尚不存在，也請自行新增。沒有字根仍可先安裝，但不能使用嘸蝦米中文輸入。**手動安裝不會自動匯入 ZIP 內 `LicensedTables/` 的檔案。**
-5. 從 Apple 選單**登出並重新登入**；若輸入法仍未顯示，可以重新啟動 Mac。前往 **「系統設定」→「鍵盤」→「文字輸入」→「編輯」→「＋」**，尋找並加入 **蝦米GO／ShamiGo**，然後在選單列切換使用。加入後可將蝦米GO排在 ABC 前面。
+開啟 Mac 的「終端機」（Terminal），**完整複製以下整段指令，貼上後按 Return**：
 
-### 如果 macOS 阻擋開啟
+```bash
+(
+  set -e
+  DIR="$(mktemp -d -t shamigo-install)"
+  trap 'rm -rf "$DIR"' EXIT
+  curl -fL --retry 3 -o "$DIR/ShamiGo.zip" \
+    "https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
+  printf '%s  %s\n' \
+    "57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3" \
+    "$DIR/ShamiGo.zip" | shasum -a 256 -c -
+  ditto -x -k "$DIR/ShamiGo.zip" "$DIR"
+  /bin/bash "$DIR/Install_ShamiGo_Mac.command"
+)
+```
 
-目前提供的 App 使用 **ad-hoc 本機簽章，尚未經 Apple Developer ID 正式簽署與公證**。手動複製檔案**不會自動解除 Gatekeeper 的安全限制**。若 macOS 提示無法驗證開發者，請先確認 ZIP 來自本專案及校驗碼無誤；如仍決定信任此軟體，可依 [Apple 官方「隱私權與安全性」個別允許程序](https://support.apple.com/zh-tw/102445)操作。只有系統實際顯示「仍要打開」時才能使用該選項；請勿全面關閉 Gatekeeper，若提示程式已損壞或含惡意軟體，請停止安裝。
+指令會從**本專案 GitHub Release**下載 v0.10.610、驗證 SHA-256、暫時解壓，然後執行套件內的安裝程式；成功或失敗後都會清理暫存資料。安裝在**目前使用者**的 `~/Library/Input Methods/ShamiGo.app`，不用以 `sudo` 執行指令。若校驗失敗，安裝會自動停止。
 
-若複製完成、重新登入後仍找不到蝦米GO，請先核對上述 App 與字根的兩個路徑。**若系統仍拒絕註冊或執行，單純手動複製無法保證成功，可能需等待正式簽章／公證的安裝版本。**
+**安裝完成後，請從 Apple 選單登出再登入**，接著到「系統設定 → 鍵盤 → 文字輸入 → 編輯 → ＋」加入 **蝦米GO／ShamiGo**。如果仍找不到，請重新啟動 Mac，再檢查輸入來源清單。
+
+### 字根與更新
+
+沒有字根也能先安裝，英文模式仍可使用。日後自行合法取得 `liu-uni.tab`，放入：
+
+`~/Library/Application Support/ShamiGo/LicensedTables/liu-uni.tab`
+
+在 Finder 按 **Command + Shift + G** 可直接開啟上述資料夾位置（不含最後的檔名），沒有資料夾時請自行建立。補入字根後登出再登入，讓輸入法重新載入。
+
+若已下載並解壓縮 ZIP，也可在「終端機」進入解壓後的資料夾，執行 `/bin/bash Install_ShamiGo_Mac.command`。解除安裝可在相同資料夾執行 `/bin/bash Uninstall_ShamiGo_Mac.command`。
+
+### macOS 安全性提醒
+
+**此公開版使用 ad-hoc 簽章，尚未經 Apple Developer ID 正式簽署及公證。** 終端機自動安裝並不表示可繞過 Gatekeeper。若系統阻擋開啟，請先確認來源與檔案校驗，並依 [Apple 官方「隱私權與安全性」個別允許步驟](https://support.apple.com/zh-tw/102445)處理；若系統提示程式損壞或含惡意軟體，請停止安裝。**不要使用 `sudo`、關閉 Gatekeeper，或移除系統的安全性檢查來強行安裝。**
 
 ## 功能與相容性
 
