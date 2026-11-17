@@ -1,9 +1,14 @@
 {
   "product": "ShamiGo",
-  "release": "v0.10.607",
-  "windows": "0.10.607",
+  "release": "v0.10.607-p1",
+  "package": {
+    "version": "0.10.607",
+    "patch": "p1"
+  },
+  "windows": {
+    "version": "0.10.607"
+  },
   "linux_prebuilt": "0.10.366-1",
   "macOS": "not included",
-  "public_archive": "ShamiGo_v0.10.607_Public.zip",
-  "sha256": "703aaf4aae85b758cdcf90b5abbfcbb8aa26e6650a5f3f35c4e658291d07aaa6"
+  "public_archive": "ShamiGo_v0.10.607-p1_Public.zip"
 }
