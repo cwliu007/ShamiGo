@@ -73,6 +73,8 @@ shamigo-setup import-data --source /path/to/LicensedTables
 
 若已下載並解壓縮 ZIP，也可在「終端機」進入解壓後的資料夾，執行 `/bin/bash Install_ShamiGo_Mac.command`。解除安裝可在相同資料夾執行 `/bin/bash Uninstall_ShamiGo_Mac.command`。
 
+**已知問題：** macOS v0.10.610 的英文詞典搜尋欄，在中文輸入模式下可能無法正常輸入英文字母。v0.10.611 的修正正在進行 Mac 原生編譯驗證；完成前，GitHub 仍提供 v0.10.610，不會以未修正的執行檔冒充新版。
+
 ### macOS 安全性提醒
 
 **此公開版使用 ad-hoc 簽章，尚未經 Apple Developer ID 正式簽署及公證。** 終端機自動安裝並不表示可繞過 Gatekeeper。若系統阻擋開啟，請先確認來源與檔案校驗，並依 [Apple 官方「隱私權與安全性」個別允許步驟](https://support.apple.com/zh-tw/102445)處理；若系統提示程式損壞或含惡意軟體，請停止安裝。**不要使用 `sudo`、關閉 Gatekeeper，或移除系統的安全性檢查來強行安裝。**
