@@ -1,0 +1,2 @@
+ShamiGo package v0.10.607
+Windows runtime v0.10.607; native install helper v0.10.607

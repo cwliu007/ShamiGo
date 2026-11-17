@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>蝦米GO 使用說明</title><style>
+:root{color-scheme:light dark}*{box-sizing:border-box}body{font-family:system-ui,"Microsoft JhengHei","Noto Sans TC",sans-serif;max-width:940px;margin:0 auto;padding:28px 24px;color:light-dark(#17202a,#f1f3f8);background:light-dark(#fff,#12171f);line-height:1.65}h1{font-size:2rem;margin:0 0 0.6em}h2{font-size:1.27rem;border-bottom:1px solid light-dark(#ddd,#414753);padding-bottom:.35em;margin-top:1.8em}p,li{font-size:1rem}table{width:100%;border-collapse:collapse;margin:1em 0}th,td{border-bottom:1px solid light-dark(#d9dfe6,#38404b);padding:9px 11px;text-align:left;vertical-align:top}th{font-weight:650}code,kbd{font:0.91em ui-monospace,Consolas,monospace;background:light-dark(#eef1f4,#252c35);padding:2px 5px;border-radius:4px}a{color:light-dark(#135aa5,#a4c8fa)}@media(max-width:600px){body{padding:18px 13px}table{font-size:.91rem}th,td{padding:7px 5px}}
+</style></head><body>
+<h1>蝦米GO 使用說明</h1>
+<p>蝦米GO是支援嘸蝦米字碼的跨平台輸入介面，並非官方嘸蝦米輸入法。使用前須備妥自己有合法使用權、檔名與格式相容的字根資料。</p>
+<h2>一、安裝、啟動與結束</h2>
+<table>
+<thead>
+<tr>
+  <th>系統</th>
+  <th>使用方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Windows</td>
+  <td>解壓後執行 <code>Run_Windows.cmd</code> 可免安裝使用；<code>Install_Windows.cmd</code> 安裝；<code>Uninstall_Windows.cmd</code> 解除安裝。從通知區選單可開啟設定或結束程式。</td>
+</tr>
+<tr>
+  <td>macOS</td>
+  <td>解壓後執行 <code>Install_macOS.command</code>，也可複製 <code>Install_macOS_Bash.txt</code> 的整段指令至終端機；<code>Uninstall_macOS.command</code> 解除安裝。安裝後可從系統輸入來源選單切換。</td>
+</tr>
+<tr>
+  <td>Linux</td>
+  <td>解壓後執行 <code>sh Install_Linux.sh</code> 安裝；<code>sh Uninstall_Linux.sh</code> 解除安裝。輸入來源由 Fcitx5 管理。</td>
+</tr>
+</tbody>
+</table>
+<h2>二、輸入模式與快捷鍵</h2>
+<p>輸入模式包括 <strong>Eng、嘸、注音、拼音、快碼、簡體、日文</strong>。實際可用模式依各系統功能與已提供的字根而定。</p>
+<table>
+<thead>
+<tr>
+  <th>Windows 預設群組</th>
+  <th>快捷鍵</th>
+  <th>模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>第一組</td>
+  <td><code>Ctrl + Space</code>（或短按 <code>Ctrl</code>）</td>
+  <td>Eng ↔ 嘸</td>
+</tr>
+<tr>
+  <td>第二組</td>
+  <td><code>Ctrl + Shift</code></td>
+  <td>注音 ↔ 拼音</td>
+</tr>
+<tr>
+  <td>第三組</td>
+  <td><code>Ctrl + Alt + Space</code></td>
+  <td>快碼 → 簡體 → 日文</td>
+</tr>
+</tbody>
+</table>
+<p>這是<strong>出廠預設</strong>，可在設定中更改。<code>Shift + Space</code> 切換全形／半形；<code>Ctrl + Alt + ,</code> 開啟快速符號選單。</p>
+<p><strong>macOS 差異：</strong>可按住 <code>Fn</code> 後連按 <code>Space</code>，或使用已啟用的自訂切換快捷鍵；<code>Ctrl + Space</code> 可能由 macOS 系統接管。<strong>Linux 差異：</strong>切換鍵以 Fcitx5 的輸入來源及快捷鍵設定為準。</p>
+<h2>注音與漢語拼音對照</h2>
+<p>注音與漢語拼音依國語讀音對照，不能將每個注音符號機械地換成一個英文字母。注音使用臺灣常見的大千鍵盤；拼音使用漢語拼音與數字聲調。</p>
+<table><tr><th>注音聲母</th><th>ㄅ</th><th>ㄆ</th><th>ㄇ</th><th>ㄈ</th><th>ㄉ</th><th>ㄊ</th><th>ㄋ</th><th>ㄌ</th><th>ㄍ</th><th>ㄎ</th><th>ㄏ</th></tr><tr><td>漢語拼音</td><td>b</td><td>p</td><td>m</td><td>f</td><td>d</td><td>t</td><td>n</td><td>l</td><td>g</td><td>k</td><td>h</td></tr></table>
+<table><tr><th>注音聲母</th><th>ㄐ</th><th>ㄑ</th><th>ㄒ</th><th>ㄓ</th><th>ㄔ</th><th>ㄕ</th><th>ㄖ</th><th>ㄗ</th><th>ㄘ</th><th>ㄙ</th></tr><tr><td>漢語拼音</td><td>j</td><td>q</td><td>x</td><td>zh</td><td>ch</td><td>sh</td><td>r</td><td>z</td><td>c</td><td>s</td></tr></table>
+<table><tr><th>注音韻母</th><th>ㄚ</th><th>ㄛ</th><th>ㄜ</th><th>ㄝ</th><th>ㄞ</th><th>ㄟ</th><th>ㄠ</th><th>ㄡ</th><th>ㄢ</th><th>ㄣ</th><th>ㄤ</th><th>ㄥ</th><th>ㄦ</th></tr><tr><td>漢語拼音</td><td>a</td><td>o</td><td>e</td><td>ê（依音節拼寫）</td><td>ai</td><td>ei</td><td>ao</td><td>ou</td><td>an</td><td>en</td><td>ang</td><td>eng</td><td>er</td></tr></table>
+<table><tr><th>注音介音</th><th>ㄧ</th><th>ㄨ</th><th>ㄩ</th></tr><tr><td>漢語拼音</td><td>i（或 y）</td><td>u（或 w）</td><td>ü（或 yu）</td></tr></table>
+<p><strong>拼寫規則：</strong>ㄓ、ㄔ、ㄕ、ㄖ、ㄗ、ㄘ、ㄙ獨立成音節時寫作 <code>zhi, chi, shi, ri, zi, ci, si</code>；ㄩ在 j、q、x 後寫成 u，如 <code>ju, qu, xu</code>。複韻母會依音節簡寫，例如 ㄧㄡ→<code>iu</code>、ㄨㄟ→<code>ui</code>、ㄨㄣ→<code>un</code>（有聲母時）。</p>
+<table><tr><th>國字</th><th>注音</th><th>漢語拼音</th><th>拼音模式輸入</th></tr><tr><td>你</td><td>ㄋㄧˇ</td><td>nǐ</td><td>ni3</td></tr><tr><td>好</td><td>ㄏㄠˇ</td><td>hǎo</td><td>hao3</td></tr><tr><td>中</td><td>ㄓㄨㄥ</td><td>zhōng</td><td>zhong1</td></tr><tr><td>文</td><td>ㄨㄣˊ</td><td>wén</td><td>wen2</td></tr><tr><td>學</td><td>ㄒㄩㄝˊ</td><td>xué</td><td>xue2</td></tr><tr><td>月</td><td>ㄩㄝˋ</td><td>yuè</td><td>yue4</td></tr><tr><td>是</td><td>ㄕˋ</td><td>shì</td><td>shi4</td></tr><tr><td>我</td><td>ㄨㄛˇ</td><td>wǒ</td><td>wo3</td></tr></table>
+<p>聲調：第一聲 <code>1</code>（陰平）、第二聲 <code>2</code>（ˊ）、第三聲 <code>3</code>（ˇ）、第四聲 <code>4</code>（ˋ）、輕聲 <code>5</code>（˙）。例如 <code>ma1</code> 至 <code>ma5</code> 分別對應 ㄇㄚ、ㄇㄚˊ、ㄇㄚˇ、ㄇㄚˋ、ㄇㄚ˙。</p>
+<p><strong>大千鍵盤範例：</strong>「你」以 <code>su3</code>（ㄋ、ㄧ、ˇ）輸入注音，以 <code>ni3</code> 輸入拼音；「是」以 <code>g4</code> 輸入注音，以 <code>shi4</code> 輸入拼音。</p>
+<h2>三、輸入、候選與英文輸出</h2>
+<ul>
+<li>中文字碼輸入後，<code>Space</code> 選第一候選（第 0 個），<code>V / R / S / F / W / L / C / B / K</code> 可選後續候選；亦可用候選編號或滑鼠點選。若按鍵仍能組成有效字碼，會優先繼續組字。</li>
+<li><code>PageUp / PageDown</code> 翻候選頁。Windows 浮動框上的滑鼠滾輪<strong>向上到下一頁、向下到上一頁</strong>，每次一頁；其他系統以其候選介面為準。</li>
+<li>在中文模式下，輸入英文單字後按 <strong><code>Space</code> 會輸出英文及一個半形空格</strong>；按 <strong><code>Tab</code> 或 <code>Enter</code> 只輸出英文</strong>，不附加空格。<code>Tab</code> 也可直接送出尚未確認的原始字碼。</li>
+<li>英文拼字候選來源及排序不變，英漢詞義僅使用離線內建的 ECDICT 英漢雙解詞典。每頁最多五個候選字。</li>
+<li>Windows：將滑鼠停在英文拼字建議候選字上，可查看本機字典的音標、英義、臺灣繁中解釋及例句。泡泡框最多顯示 10 行，超過可捲動；未收錄的單字會明確提示。</li>
+<li>已輸出的英文按 Backspace 或 Delete 會逐字刪除；拼字建議中的錯誤英文碼按 Backspace 可退一碼，重打後按 Space 會重新檢查。</li>
+<li>Eng 英文模式提供拼字檢查；判定使用原本的候選索引與內建 ECDICT 詞條，不會直接改字。</li>
+<li>英文拼字候選來源及排序不變，英漢詞義僅使用離線內建的 ECDICT 英漢雙解詞典。每頁最多五個候選字。</li>
+<li><strong>錯誤字碼：</strong>沒有有效候選時，浮動框會顯示錯碼提示；英文拼字建議可按 <code>Backspace</code> 修改最後一碼，再確認；<code>Delete</code> 清空未確認的英文碼。開啟「錯碼推薦」後，才會額外顯示可能的修正候選。</li>
+</ul>
+<h2>四、浮動框與設定</h2>
+<ul>
+<li><strong>狀態框及模式切換提示預設 1 秒；選字後結果提示預設 2.5 秒</strong>（以該平台有提供的提示類型為準）。正在輸入的候選框不會因狀態提示到期而消失。</li>
+<li>Windows 的秒數欄位可輸入小數，例如 2.5、0.75，並依毫秒精度儲存。</li>
+<li>預設跟隨文字游標顯示浮動框；可依系統支援情形調整位置、字型大小、透明度、外觀與固定方式。固定浮動框或滑鼠停留保留等功能可能延長顯示。</li>
+<li>關聯詞、罕見字及錯碼推薦預設關閉；需要時可自行開啟。可在設定中調整選字提示、字型及顯示秒數。</li>
+<li>Windows 支援成對符號補齊及巢狀 <code>Tab</code> 跳出；macOS 不使用這套自動配對功能。Linux 的支援依目前 Fcitx5 輸入模式而定。</li>
+<li>「查字」可反查字碼、同音字及相關候選，查詢不會自動取代原文件文字。</li>
+</ul>
+<h2>五、字根與個人資料</h2>
+<p>三個系統各自使用獨立的 <code>LicensedTables</code> 資料夾，請放入合法取得且符合程式要求的字根檔：</p>
+<table>
+<thead>
+<tr>
+  <th>系統</th>
+  <th>ZIP 內放置位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Windows</td>
+  <td><code>Packages/Windows/ShamiGo/LicensedTables/</code></td>
+</tr>
+<tr>
+  <td>macOS</td>
+  <td><code>Packages/macOS/LicensedTables/</code></td>
+</tr>
+<tr>
+  <td>Linux</td>
+  <td><code>Packages/Linux/LicensedTables/</code></td>
+</tr>
+</tbody>
+</table>
+<p>Mac 安裝時會把字根放到 <code>~/Library/Application Support/ShamiGo/LicensedTables/</code>，<strong>不放入已簽署的 App</strong>。安裝完成後的私人離線安裝包在 <code>Packages/macOS/Private_Builds/</code>，其中 App 與字根資料夾分開。修改字根後，請完整結束並重新啟動輸入法。自訂詞組可使用 <code>liu.box</code>，請自行備份。</p>
+<h2>六、第三方資料與權利</h2>
+<p>蝦米GO可能讀取使用者自行提供的字根，以及其他第三方字音或詞組資料；各資料權利與授權條件分別適用。<strong>私人 ZIP 及內嵌字根的安裝負載不可直接公開上傳或散布</strong>。詳細資訊請參閱 <code>LICENSE.md</code> 與 <code>THIRD_PARTY_NOTICES.md</code>。</p>
+
+</body></html>

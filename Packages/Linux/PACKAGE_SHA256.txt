@@ -1,0 +1,1 @@
+f7af230b1f4d6b637a357a465c580975ae9a53cbe87d8ea4493e08c0ca01930f  shamigo-fcitx5_0.10.366-1_amd64.deb

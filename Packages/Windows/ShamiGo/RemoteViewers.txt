@@ -1,0 +1,9 @@
+# ShamiGo Windows v0.10.394: Optional remote VIEWER executable names.
+# Optional portable/manual entries: one EXE basename per line; restart to reload.
+# Example (remove leading # to enable):
+# MyRemoteViewer.exe
+# Do not add chrome.exe / msedge.exe / firefox.exe. Use the tray browser mode.
+# Host-only services are not viewer windows and should not be added.
+# NEW: You can designate a program from the ShamiGo tray menu or Settings.
+# Personal assignments are saved to %LOCALAPPDATA%\ShamiGo\RemoteViewers.txt.
+# Personal entries apply immediately and survive administrator installations.
