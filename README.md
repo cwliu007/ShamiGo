@@ -6,7 +6,7 @@
 
 ## 下載
 
-- **[Windows／Linux v0.10.607 OneFolder 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-onefolder/ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip)**
+- **[Windows／Linux 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.607-onefolder/ShamiGo_v0.10.607_OneFolder_Windows_Linux.zip)**
 - **[macOS Apple Silicon v0.10.610 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip)**
 
 嘸蝦米字根須自行合法取得，可參考[嘸蝦米官方網站](https://boshiamy.com/)；公開版不包含私人字根或開發原始碼。**即使尚無字根，也可以先安裝；之後補入 `liu-uni.tab` 並重新啟動即可使用中文輸入。**
@@ -38,46 +38,53 @@ shamigo-setup import-data --source /path/to/LicensedTables
 
 ## macOS：Apple Silicon
 
-適用 **macOS 14 或更新版本、Apple Silicon（arm64）**，不支援 Intel Mac。公開版已包含編譯完成的 `ShamiGo.app`，使用者**不需要自行編譯，也不必手動搬移 App**。
+適用 **macOS 14 或更新版本的 Apple Silicon（arm64）Mac**，不支援 Intel Mac。這是已編譯的安裝包，不需要自行編譯。
 
-### 複製指令到終端機，自動下載並安裝（建議）
+### 安裝：下載 ZIP 後，複製指令到終端機
 
-開啟 Mac 的「終端機」（Terminal），**完整複製以下整段指令，貼上後按 Return**：
+1. 下載 **[macOS 公開版 ZIP](https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip)**，將 ZIP 存到 Mac 的「下載項目」（`~/Downloads`）。**不用先解壓縮。**
+2. 開啟「終端機」（Terminal），複製以下**整段指令**並貼上執行：
 
 ```bash
 (
   set -e
+  ZIP="$HOME/Downloads/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
+  [ -f "$ZIP" ] || { echo "找不到下載的 ShamiGo ZIP：$ZIP"; exit 1; }
   DIR="$(mktemp -d -t shamigo-install)"
   trap 'rm -rf "$DIR"' EXIT
-  curl -fL --retry 3 -o "$DIR/ShamiGo.zip" \
-    "https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
   printf '%s  %s\n' \
-    "57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3" \
-    "$DIR/ShamiGo.zip" | shasum -a 256 -c -
-  ditto -x -k "$DIR/ShamiGo.zip" "$DIR"
+    '57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3' \
+    "$ZIP" | shasum -a 256 -c -
+  ditto -x -k "$ZIP" "$DIR"
   /bin/bash "$DIR/Install_ShamiGo_Mac.command"
 )
 ```
 
-指令會從**本專案 GitHub Release**下載 v0.10.610、驗證 SHA-256、暫時解壓，然後執行套件內的安裝程式；成功或失敗後都會清理暫存資料。安裝在**目前使用者**的 `~/Library/Input Methods/ShamiGo.app`，不用以 `sudo` 執行指令。若校驗失敗，安裝會自動停止。
+指令會核對下載檔的 SHA-256、暫時解壓、執行內附的安裝程式，再清理暫存檔。**請勿使用 `sudo`。** 安裝後從 Apple 選單登出再登入，然後在「系統設定 → 鍵盤 → 文字輸入 → 編輯」加入 **蝦米GO／ShamiGo**。
 
-**安裝完成後，請從 Apple 選單登出再登入**，接著到「系統設定 → 鍵盤 → 文字輸入 → 編輯 → ＋」加入 **蝦米GO／ShamiGo**。如果仍找不到，請重新啟動 Mac，再檢查輸入來源清單。
+即使尚未提供字根也能安裝；日後將合法取得的 `liu-uni.tab` 放到 `~/Library/Application Support/ShamiGo/LicensedTables/`，重新登入後即可載入中文輸入資料。
 
-### 字根與更新
+### 解除安裝：從下載的 ZIP 執行
 
-沒有字根也能先安裝，英文模式仍可使用。日後自行合法取得 `liu-uni.tab`，放入：
+保留下載的 ZIP，開啟「終端機」，貼上以下整段指令：
 
-`~/Library/Application Support/ShamiGo/LicensedTables/liu-uni.tab`
+```bash
+(
+  set -e
+  ZIP="$HOME/Downloads/ShamiGo_v0.10.610_macOS_arm64_Public.zip"
+  [ -f "$ZIP" ] || { echo "找不到下載的 ShamiGo ZIP：$ZIP"; exit 1; }
+  DIR="$(mktemp -d -t shamigo-uninstall)"
+  trap 'rm -rf "$DIR"' EXIT
+  ditto -x -k "$ZIP" "$DIR"
+  /bin/bash "$DIR/Uninstall_ShamiGo_Mac.command"
+)
+```
 
-在 Finder 按 **Command + Shift + G** 可直接開啟上述資料夾位置（不含最後的檔名），沒有資料夾時請自行建立。補入字根後登出再登入，讓輸入法重新載入。
-
-若已下載並解壓縮 ZIP，也可在「終端機」進入解壓後的資料夾，執行 `/bin/bash Install_ShamiGo_Mac.command`。解除安裝可在相同資料夾執行 `/bin/bash Uninstall_ShamiGo_Mac.command`。
-
-**已知問題：** macOS v0.10.610 的英文詞典搜尋欄，在中文輸入模式下可能無法正常輸入英文字母。v0.10.611 的修正正在進行 Mac 原生編譯驗證；完成前，GitHub 仍提供 v0.10.610，不會以未修正的執行檔冒充新版。
+解除安裝程式會切換至 ABC，停用蝦米GO輸入來源，結束程式並刪除目前使用者的 `~/Library/Input Methods/ShamiGo.app`。**個人字根與設定資料會保留**，不會刪除其他輸入法；完成後請登出再登入。
 
 ### macOS 安全性提醒
 
-**此公開版使用 ad-hoc 簽章，尚未經 Apple Developer ID 正式簽署及公證。** 終端機自動安裝並不表示可繞過 Gatekeeper。若系統阻擋開啟，請先確認來源與檔案校驗，並依 [Apple 官方「隱私權與安全性」個別允許步驟](https://support.apple.com/zh-tw/102445)處理；若系統提示程式損壞或含惡意軟體，請停止安裝。**不要使用 `sudo`、關閉 Gatekeeper，或移除系統的安全性檢查來強行安裝。**
+**目前 GitHub 上的 macOS v0.10.610 使用 ad-hoc 簽章，尚未經 Apple Developer ID 正式簽署與公證。** 如果 macOS 阻擋開啟，請先確認檔案來源，依 [Apple 官方個別允許步驟](https://support.apple.com/zh-tw/102445)操作；不要全面關閉 Gatekeeper。若系統顯示程式損壞或含惡意軟體，請停止安裝。
 
 ## 功能與相容性
 
@@ -89,9 +96,11 @@ Windows 版提供繁簡中文嘸蝦米輸入、英文拼字檢查與建議、候
 
 | 平台 | 版本 |
 | --- | --- |
-| Windows 11（64 位元） | v0.10.607 OneFolder |
+| Windows 11（64 位元） | v0.10.607 |
 | Debian 13／LMDE 7（64 位元） | v0.10.366-1 |
 | macOS 14+（Apple Silicon arm64） | v0.10.610 |
+
+目前三平台的**實際執行檔版本尚未相同**。這裡列出的是真實建置版本；必須重新編譯並發佈 Windows、Linux，才能將三者真正統一到同一版本。不能只修改 README 或檔名。
 
 ## 安全與授權
 
