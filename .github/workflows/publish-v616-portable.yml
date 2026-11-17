@@ -137,7 +137,7 @@ jobs:
           root=pathlib.Path(os.environ['GITHUB_WORKSPACE'])
           manifest=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'ShamiGo_v616_stage/manifest.json').read_text())
           names=sorted(manifest['public'])
-          subprocess.run(['git','add','--',*names],cwd=root,check=True)
+          subprocess.run(['git','add','-f','--',*names],cwd=root,check=True)
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
