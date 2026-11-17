@@ -1,0 +1,130 @@
+name: Publish ShamiGo v0.10.611 macOS arm64
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-v611-macos.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-publish:
+    runs-on: macos-latest
+    steps:
+      - name: Check out source-free public repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch vetted v611 binary patch and safe uninstall script
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/release/v0.10.611-macos-stage:refs/remotes/origin/release/v0.10.611-macos-stage'
+      - name: Reconstruct and audit public macOS package
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, pathlib, subprocess, hashlib, shutil, re, zipfile, plistlib
+          root=pathlib.Path.cwd()
+          temp=pathlib.Path(os.environ['RUNNER_TEMP'])
+          old_zip=temp/'ShamiGo_v610_public.zip'
+          stage=temp/'ShamiGo_v611_public'
+          stage.mkdir()
+          old_url='https://github.com/cwliu007/ShamiGo/releases/download/v0.10.610-macos/ShamiGo_v0.10.610_macOS_arm64_Public.zip'
+          subprocess.run(['curl','-fL','--retry','3','-o',str(old_zip),old_url],check=True)
+          def checksum(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          assert checksum(old_zip)=='57ed95e9b656d730f021b1c7eadb95c1f9b0693381932bd6f5a91fa88ac346f3','v610 release archive changed'
+          subprocess.run(['/usr/bin/ditto','-x','-k',str(old_zip),str(stage)],check=True)
+          old_binary=stage/'ShamiGo.app/Contents/MacOS/ShamiGoIME'
+          old_plist=stage/'ShamiGo.app/Contents/Info.plist'
+          assert checksum(old_binary)=='2f21a6721b5f16934b9481aa4364ab6eeee78480be2d78326c965fbf3b9b2aad','v610 binary mismatch'
+          assert checksum(old_plist)=='293d9f87c9f8e183ba85e8c5b1c087caf66ae9869497e4c79656190df0ba4b38','v610 Info.plist mismatch'
+          ref='origin/release/v0.10.611-macos-stage'
+          patch_zip=temp/'v611.patch.gz'
+          with patch_zip.open('wb') as file:
+              subprocess.run(['git','show',f'{ref}:mac_release_payload/v611_ime.patch.gz'],stdout=file,check=True)
+          assert checksum(patch_zip)=='7dc9b148889541a525a6c4a7f0fe90bdacf35e9979c1c43287a756d1a6a11ec2','v611 patch mismatch'
+          patch=temp/'v611.patch'
+          with patch.open('wb') as file:
+              subprocess.run(['gzip','-dc',str(patch_zip)],stdout=file,check=True)
+          subprocess.run(['git','apply','--binary','-p2',str(patch)],cwd=stage,check=True)
+          assert checksum(old_binary)=='c87286a7e9c22a38de1c582b059d3b5db0fdf3457a4782cd59f33568699e32e1','new binary mismatch'
+          assert checksum(old_plist)=='63fe309257c83d798b95e2dd1539de2107576b2a77fe635ad5734986fae2e73a','new plist mismatch'
+          expected=plistlib.loads(old_plist.read_bytes())
+          assert expected['CFBundleShortVersionString']=='0.10.611' and expected['CFBundleIdentifier']=='tw.shamigo.inputmethod.macos'
+          for remote,local in [('v611_uninstall.command','Uninstall_ShamiGo_Mac.command'),('v611_readme_install.txt','README_Install.txt')]:
+              with (stage/local).open('wb') as file:
+                  subprocess.run(['git','show',f'{ref}:mac_release_payload/{remote}'],stdout=file,check=True)
+          (stage/'Uninstall_ShamiGo_Mac.command').chmod(0o755)
+          # Finder-generated AppleDouble metadata are not needed for the signed App.
+          shutil.rmtree(stage/'__MACOSX',ignore_errors=True)
+          for p in stage.rglob('._*'):
+              if p.is_file(): p.unlink()
+          if any('保留個人字根' in p.read_text(errors='ignore') for p in [stage/'README_Install.txt']):
+              raise SystemExit('Outdated preserve-data uninstall note in public package')
+          files=sorted(x for x in stage.rglob('*') if x.is_file())
+          assert len(files)==19,('Unexpected number of public files',len(files))
+          for p in files:
+              rel=p.relative_to(stage).as_posix()
+              if p.is_symlink() or re.search(r'(?i)\.(tab|cin|box|cpp|c|mm|hpp|h|swift)$',rel) or rel.startswith(('Projects/','Tools/','__MACOSX/')):
+                  raise SystemExit('Forbidden public file: '+rel)
+          archive=root/'ShamiGo_v0.10.611_macOS.zip'
+          with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for f in files:z.write(f,arcname=f.relative_to(stage).as_posix())
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              assert len(z.namelist())==19
+              for n in z.namelist():
+                  assert z.read(n)==(stage/n).read_bytes(),n
+          (root/'ShamiGo_v0.10.611_macOS_SHA256.txt').write_text(checksum(archive)+'  '+archive.name+'\n')
+          print('ARCHIVE',archive.name,'SIZE',archive.stat().st_size,'SHA256',checksum(archive))
+          PY
+      - name: Verify actual signed Mac application and install scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/ShamiGo_v611_public"
+          /usr/bin/codesign --verify --strict --verbose=2 "$base/ShamiGo.app"
+          /usr/bin/lipo -archs "$base/ShamiGo.app/Contents/MacOS/ShamiGoIME" | grep -qw arm64
+          /usr/bin/lipo -archs "$base/shamigo_tis_tool" | grep -qw arm64
+          /usr/bin/plutil -lint "$base/ShamiGo.app/Contents/Info.plist"
+          for file in Install_ShamiGo_Mac.command Uninstall_ShamiGo_Mac.command Install_External_Tables.sh; do
+            /bin/bash -n "$base/$file"
+          done
+          grep -q 'remove_owned "$HOME/Library/Application Support/ShamiGo"' "$base/Uninstall_ShamiGo_Mac.command"
+          grep -q 'remove_owned "$HOME/Library/Caches/ShamiGo"' "$base/Uninstall_ShamiGo_Mac.command"
+          grep -q 'remove_owned "$HOME/Library/Preferences/$EXPECTED.plist"' "$base/Uninstall_ShamiGo_Mac.command"
+          echo 'Validated ad-hoc code signature, arm64, version, archive and full-uninstall script.'
+      - name: Publish ShamiGo v611 macOS binary release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/notes.txt" <<'EOF'
+          ## 蝦米GO v0.10.611 — macOS Apple Silicon
+
+          - Apple Silicon arm64、macOS 14 以上；已編譯，不需自行編譯。
+          - 修正英文搜尋輸入與關閉鈕，更新完整解除安裝腳本。
+          - 本 ZIP 不包含私人字根、應用程式原始碼。自行合法取得字根後可透過 README 指令開啟字根資料夾。
+          - **完整解除安裝會不可逆地移除目前使用者的字根、字典、設定與快取。**
+          - 請參閱專案 README，使用 Terminal 下載到 Downloads 並完成安裝；解除安裝先使用保留的 ZIP，找不到才重新下載。
+          - 目前僅 ad-hoc 簽章，**尚未 Apple Developer ID 簽署或公證**。如受 macOS Gatekeeper 阻擋，請遵循 Apple 官方個別允許程序；不應停用系統防護。
+          - CI 的簽章與封裝檢查，不代表所有 Mac 實機安裝均已驗證。
+          EOF
+          tag='v0.10.611-macos'
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" ShamiGo_v0.10.611_macOS.zip ShamiGo_v0.10.611_macOS_SHA256.txt --clobber
+            gh release edit "$tag" --notes-file "$RUNNER_TEMP/notes.txt"
+          else
+            gh release create "$tag" ShamiGo_v0.10.611_macOS.zip ShamiGo_v0.10.611_macOS_SHA256.txt --target "$GITHUB_SHA" --title 'ShamiGo v0.10.611 — macOS arm64' --notes-file "$RUNNER_TEMP/notes.txt"
+          fi
+      - name: Remove temporary binary-delta staging branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X DELETE repos/cwliu007/ShamiGo/git/refs/heads/release/v0.10.611-macos-stage || true
